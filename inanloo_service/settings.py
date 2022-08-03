@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w+&_)fw%wb+c18_&1n63_aeb9%bgc#4@&y&p8z$fs5d$--b42^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','mersa-group.ir']
+ALLOWED_HOSTS = ['localhost','mersa-group.ir']
 
 
 # Application definition
@@ -49,7 +49,15 @@ INSTALLED_APPS = [
 
     'order',
     'warehouse',
-    'accountant'
+    'accountant',
+    'baseinfo',
+    'configrules',
+    'personal',
+
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_hotp',
+    'django_otp.plugins.otp_static',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_otp.middleware.OTPMiddleware'
 ]
 
 ROOT_URLCONF = 'inanloo_service.urls'
@@ -89,11 +98,11 @@ WSGI_APPLICATION = 'inanloo_service.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'postgresdb': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'mersagro_inanloodb',
         'USER': 'mersagro_admin_user',
