@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'configrules',
     'personal',
 
-
+    'django.contrib.admindocs'
 
     # 'django_otp',
     # 'django_otp.plugins.otp_totp',
