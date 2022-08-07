@@ -1,16 +1,15 @@
 from django.contrib import admin
-from personal.models import (
-    Person,
-    Mobiles,
-    Provinces,
-    Phones,
-    Addresses,
-    PersonAuth
-)
+from .models import (
+    KindOfOrder,
+    OrderTimeRange,
+    OrderStatus,
+    Order,
+    OrderDetails,
 
-admin.site.register(Person)
-admin.site.register(Mobiles)
-admin.site.register(Provinces)
-admin.site.register(Phones)
-admin.site.register(Addresses)
-admin.site.register(PersonAuth)
+)
+# Register your models here.
+admin.site.register(KindOfOrder)
+admin.site.register(OrderTimeRange)
+admin.site.register(OrderStatus)
+admin.site.register(Order)
+admin.site.register(OrderDetails)

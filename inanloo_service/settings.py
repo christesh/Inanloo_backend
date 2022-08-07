@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -54,10 +55,12 @@ INSTALLED_APPS = [
     'configrules',
     'personal',
 
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-    'django_otp.plugins.otp_hotp',
-    'django_otp.plugins.otp_static',
+
+
+    # 'django_otp',
+    # 'django_otp.plugins.otp_totp',
+    # 'django_otp.plugins.otp_hotp',
+    # 'django_otp.plugins.otp_static',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_otp.middleware.OTPMiddleware'
+    # 'django_otp.middleware.OTPMiddleware'
 ]
 
 ROOT_URLCONF = 'inanloo_service.urls'
@@ -112,7 +115,10 @@ DATABASES = {
     }
 }
 
-
+CORS_ORIGIN_WHITELIST = (
+'http://localhost:4200',  # for localhost (REACT Default)
+'http://apiis.mersa-group.ir', # for network
+)
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -180,3 +186,9 @@ SWAGGER_SETTINGS = {
 
 SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+GRAPH_MODELS ={
+    # 'all_aplications': True,
+    # 'group_models' : True
+    'app_labels': ["personal", "baseinfo"],
+}

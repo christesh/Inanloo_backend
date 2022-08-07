@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from baseinfo.models import Provinces, Regions
+from baseinfo.models import MembersGroup, Provinces, Regions, Devices, CustomerCategory, TechnicianCategory, TechnicianSkills
 from django.utils.safestring import mark_safe
 
 # Create your models here.
 
+
 class Person(models.Model):
     firstName = models.CharField(max_length=50)
-    LastName = models.CharField(max_length=100)
+    lastName = models.CharField(max_length=100)
     nationalId = models.CharField(max_length=10,primary_key=True, null=False, blank=False )
     birthDate = models.DateField(null=True, blank=True)
     genderChoice = (
@@ -16,25 +17,55 @@ class Person(models.Model):
     gender = models.CharField(max_length=10, choices=genderChoice, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     createdAt = models.DateTimeField(null=False, blank=False)
-    createdBy = models.ForeignKey(User,on_delete=models.CASCADE ,related_name='Creator')
-    auth = models.ForeignKey(User, on_delete=models.CASCADE,related_name='User')
+    createdBy = models.ForeignKey(User,on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='./UserPersonalImages', null=True, blank=True)
     ageRang = models.IntegerField(null=True, blank=True)
 
+
+class Customers(Person):
+    customerCategory=models.ForeignKey(CustomerCategory, on_delete=models.CASCADE)
+    customerDevices=models.ManyToManyField(Devices)
+
     def __str__(self):
-        return str(self.f_name) + '-' + str(self.l_name)
+        return 'Customer' +str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
 
     class Meta:
-        verbose_name_plural = 'Person'
+        verbose_name_plural = 'Customers'
+
+
+class Technician(Person):
+    technicianCategory = models.ForeignKey(TechnicianCategory, on_delete=models.CASCADE)
+    technicianSkills= models.ManyToManyField(TechnicianSkills)
+    technicianDevices=models.ManyToManyField(Devices)
+    technicianRank=models.FloatField()
+    activate=models.BooleanField()
+
+    def __str__(self):
+        return 'Technician' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId) +'-'+str(self.activate)
+
+    class Meta:
+        verbose_name_plural = 'Technician'
+
+
+class CompanyMembers(Person):
+    membersGroup= models.ForeignKey(MembersGroup, on_delete=models.CASCADE)
+    hireDate=models.DateField()
+    quitDate=models.DateField()
+
+    def __str__(self):
+        return 'CompanyMember' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
+
+    class Meta:
+        verbose_name_plural = 'CompanyMembers'
 
 
 class Mobiles(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    mobileNumebr=models.CharField(max_length=11, null=False, blank=False)
+    mobileNumber=models.CharField(max_length=11, null=False, blank=False)
     isMain=models.BooleanField(null=False, blank=False)
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.mobileNumebr) +'-'+str(self.isMain)
+        return str(self.person) + '-' + str(self.mobileNumber) +'-'+str(self.isMain)
 
     class Meta:
         verbose_name_plural = 'Mobiles'
@@ -42,14 +73,15 @@ class Mobiles(models.Model):
 
 class Phones(models.Model):
     person=models.ForeignKey(Person, on_delete=models.CASCADE)
-    phoneNumebr=models.CharField(max_length=11, null=False, blank=False)
+    phoneNumber=models.CharField(max_length=11, null=False, blank=False)
     isMain=models.BooleanField(null=False, blank=False)
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.phoneNumebr) +'-'+str(self.isMain)
+        return str(self.person) + '-' + str(self.phoneNumber) +'-'+str(self.isMain)
 
     class Meta:
         verbose_name_plural = 'Phones'
+
 
 class Addresses(models.Model):
     person=models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -74,24 +106,30 @@ class Addresses(models.Model):
 class PersonAuth(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    catrgory = models.ForeignKey(Group, on_delete=models.CASCADE)
+    category = models.ForeignKey(Group, on_delete=models.CASCADE)
     active = models.BooleanField(null=True, blank=True)
-    fillprofile = models.BooleanField(null=True, blank=True)
+    fillProfile = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.user) + '-' + str(self.catrgory)
+        return str(self.person) + '-' + str(self.user) + '-' + str(self.category)
 
     class Meta:
         verbose_name_plural = 'PersonAuth'
 
 
-class sms(models.Model):
-    userid = models.CharField(max_length=11)
-    vercode = models.CharField(max_length=10)
+class Supplier (models.Model):
+    supplierName=models.CharField(max_length=100)
+    supplierTel=models.CharField(max_length=100)
+    supplierFax = models.CharField(max_length=100)
+    supplierEmail = models.CharField(max_length=100)
+    supplierAddress=models.CharField(max_length=500)
+    supplierAgentFirstName=models.CharField(max_length=10)
+    supplierAgentLastName = models.CharField(max_length=50)
+    supplierAgentMobile = models.CharField(max_length=50)
 
     def __str__(self):
-        return str(self.userid)
+        return str(self.supplierName)
 
     class Meta:
-        verbose_name_plural = 'sms'
+        verbose_name_plural = 'Supplier'
 
