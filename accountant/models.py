@@ -6,8 +6,12 @@ from order.models import Order
 
 
 class PaymentStatus(models.Model):
-    status=models.CharField(max_length=20)
-    description=models.TextField()
+    """
+    در این جدول انواع وضعیت پرداخت توسظ مدیر سیستم تعریف خواهد شد.
+    به عنوان مثال: موفق، نا موفق، اقساطی و ...
+    """
+    status=models.CharField(max_length=20,help_text='عنوان وضغیت پرداخت')
+    description=models.TextField(help_text='توضیحات مربوط به وضعیت پرداخت')
 
     def __str__(self):
         return str(self.status)
@@ -17,8 +21,26 @@ class PaymentStatus(models.Model):
 
 
 class InvoiceKinds(models.Model):
-    invoiceKinds=models.CharField(max_length=20)
-    description=models.TextField()
+    """
+    منظور از invoice، فاکتور است. در این جدول انواع فاکتور توسط مدیر سیستم تعریف می شود
+    به عنوان مثال: فاکتور تکنسین، فاکتور مشتری و ...
+    """
+    invoiceKinds=models.CharField(max_length=20,help_text='عنوان نوع فاکتور')
+    description=models.TextField(help_text='توضیحات مربوط به نوع فاکتور')
+
+    def __str__(self):
+        return str(self.invoiceKinds)
+
+    class Meta:
+        verbose_name_plural = 'InvoiceKinds'
+
+class InvoiceStatus(models.Model):
+    """
+    منظور از invoice، فاکتور است. در این جدول انواع وضعیت فاکتور توسط مدیر سیستم تعریف می شود
+    به عنوان مثال: پرداخت شده، پرداخت نشده، صادر شده و ...
+    """
+    invoiceKinds=models.CharField(max_length=20,help_text='عنوان وضعیت فاکتور')
+    description=models.TextField(help_text='توضیحات مربوط به وضعیت فاکتور')
 
     def __str__(self):
         return str(self.invoiceKinds)
@@ -28,8 +50,12 @@ class InvoiceKinds(models.Model):
 
 
 class PaymentKind(models.Model):
-    paymentKind=models.CharField(max_length=10)
-    description=models.TextField()
+    """
+        در این جدول انواع روش پرداخت توسظ مدیر سیستم تعریف خواهد شد.
+        به عنوان مثال: نقدی، پرداخت اینترنتی، کیف پول و ...
+    """
+    paymentKind=models.CharField(max_length=10,help_text='عنوان نوع روش پرداخت')
+    description=models.TextField(help_text='توضیحات مربوط به نوع روش پرداخت')
 
     def __str__(self):
         return str(self.paymentKind)
@@ -39,14 +65,17 @@ class PaymentKind(models.Model):
 
 
 class Invoices(models.Model):
-    orderNo= models.ForeignKey(Order, on_delete=models.CASCADE)
-    invoiceNo=models.CharField(max_length=20)
-    invoiceKind=models.ForeignKey(InvoiceKinds,on_delete=models.CASCADE)
-    paymentKind=models.ForeignKey(PaymentKind, on_delete=models.CASCADE)
-    accepted=models.BooleanField()
-    acceptedBy=models.ForeignKey(User,on_delete=models.CASCADE)
-    acceptedDateTime=models.DateTimeField()
-
+    """
+    در این جدول اطلاعات مربوط به فاکتورهای صادر شده ذخیره میشود
+    """
+    orderNo= models.ForeignKey(Order, on_delete=models.CASCADE,help_text='این فیلد مشخص میکند که این فاکتور به کدام سفارش ارتباظ داره')
+    invoiceNo=models.CharField(max_length=20,help_text='شماره فاکتور')
+    invoiceKind=models.ForeignKey(InvoiceKinds,on_delete=models.CASCADE,help_text='توسط این فیلد نوع فاکتور از جدول InvoiceKinds انتخاب می شود')
+    paymentKind=models.ForeignKey(PaymentKind, on_delete=models.CASCADE,help_text='توسط این فیلد نوع روش پرداحت از جدول PaymentKind انتخاب می شود')
+    accepted=models.BooleanField(help_text='مشخص میکند آیا فاکتور توسط مشتری تایید شده یا خیر')
+    acceptedBy=models.ForeignKey(User,on_delete=models.CASCADE,help_text='اطلاعات مربوط به کاربر تایید کننده فاکتور در این فیلد ذخیره می شود')
+    acceptedDateTime=models.DateTimeField(help_text='تاریخ و ساعت تایید فاکتور در این قیلد ذخیره می شود')
+    invoiceStatus=models.ForeignKey(InvoiceStatus,on_delete=models.CASCADE,help_text='توسط این فیلد وضعیت فاکتور از جدول InvoiceStatus انتخاب می شود')
     def __str__(self):
         return str(self.invoiceNo)
 
