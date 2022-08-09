@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'baseinfo',
     'configrules',
     'personal',
+    'support',
 
     'django.contrib.admindocs'
 

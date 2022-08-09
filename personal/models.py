@@ -17,10 +17,10 @@ class Person(models.Model):
     gender = models.CharField(max_length=10, choices=genderChoice, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     createdAt = models.DateTimeField(null=False, blank=False)
-    createdBy = models.ForeignKey(User,on_delete=models.CASCADE)
+    createdBy = models.ForeignKey(User,on_delete=models.CASCADE, related_name='creator')
     picture = models.ImageField(upload_to='./UserPersonalImages', null=True, blank=True)
     ageRang = models.IntegerField(null=True, blank=True)
-
+    authuser = models.ForeignKey(User, on_delete=models.CASCADE,related_name='User')
 
 class Customers(Person):
     customerCategory=models.ForeignKey(CustomerCategory, on_delete=models.CASCADE)
@@ -105,7 +105,6 @@ class Addresses(models.Model):
 
 class PersonAuth(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Group, on_delete=models.CASCADE)
     active = models.BooleanField(null=True, blank=True)
     fillProfile = models.BooleanField(null=True, blank=True)

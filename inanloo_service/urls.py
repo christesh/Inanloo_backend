@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/v1/rest-auth/registration/', include('rest_auth.registration.urls')),
     path('oreder/', include('order.urls')),
     path('baseinfo/', include('baseinfo.urls')),
-    # path('personal/', include('personal.urls')),
+    path('personal/', include('personal.urls')),
     path('schema/', get_schema_view(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('docs/', include_docs_urls(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('swagger-docs/', get_swagger_view(DOCS_TITLE)),

@@ -7,7 +7,8 @@ from personal.models import (
     Phones,
     Addresses,
     PersonAuth,
-    Supplier
+    Supplier,
+    Person
 )
 admin.site.register(CompanyMembers)
 admin.site.register(Supplier)
@@ -17,3 +18,4 @@ admin.site.register(Addresses)
 admin.site.register(PersonAuth)
 admin.site.register(Customers)
 admin.site.register(Technician)
+admin.site.register(Person)
