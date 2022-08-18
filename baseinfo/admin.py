@@ -10,16 +10,30 @@ from baseinfo.models import (
     DeviceCategories,
     DeviceBrands,
     Devices,
-    DesignJson,
-    DesignModels,
-    sms,
+    HireJson,
+    HireForm,
+    OTPsms,
+    Sms,
+    SmsTypes,
     MembersGroup,
     ApplianceCategories,
     ApplianceBrands,
+    AppliancesSupplier,
     Appliances,
     DevicesPrice,
+    Problems,
+    Cities,
+    CityGeofence,
+    Neighbourhoods,
+    NeighbourhoodGeofence
 
 )
+admin.site.register(AppliancesSupplier)
+admin.site.register(Problems)
+admin.site.register(Cities)
+admin.site.register(CityGeofence)
+admin.site.register(Neighbourhoods)
+admin.site.register(NeighbourhoodGeofence)
 admin.site.register(MembersGroup)
 admin.site.register(ApplianceCategories)
 admin.site.register(ApplianceBrands)
@@ -35,7 +49,8 @@ admin.site.register(TechnicianSkills)
 admin.site.register(DeviceCategories)
 admin.site.register(DeviceBrands)
 admin.site.register(Devices)
-admin.site.register(DesignJson)
-admin.site.register(DesignModels)
-admin.site.register(sms)
-
+admin.site.register(HireForm)
+admin.site.register(HireJson)
+admin.site.register(OTPsms)
+admin.site.register(Sms)
+admin.site.register(SmsTypes)

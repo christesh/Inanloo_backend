@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import (
     PaymentStatus,
     InvoiceKinds,
+    InvoiceStatus,
     PaymentKind,
     Invoices,
     TransactionKind,
@@ -15,6 +16,7 @@ from .models import (
 
 admin.site.register(PaymentStatus),
 admin.site.register(InvoiceKinds),
+admin.site.register(InvoiceStatus),
 admin.site.register(PaymentKind),
 admin.site.register(Invoices),
 admin.site.register(TransactionKind),

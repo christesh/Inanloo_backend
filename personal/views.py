@@ -9,28 +9,22 @@ import http.client
 import requests
 import json
 import random
-from baseinfo.models import sms
+from baseinfo.models import OTPsms
 from .models import Person,PersonAuth
 
 # Create your views here.
-
-class justsms(APIView):
+class JustSms(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         mob = self.request.data.get('mobile')
-        name = self.request.data.get('fname')
-        print(mob, name)
-        if name == "":
-            p = Person.objects.filter(mobile=mob).values('f_name')
-            name = p[0]['f_name']
         pin = ''.join(random.choice('0123456789') for _ in range(4))
-        sm = sms.objects.filter(userid=mob).values()
+        sm = OTPsms.objects.filter(userId=mob).values()
         if (sm.exists()):
-            d = sms.objects.filter(userid=mob).delete()
-        r = sms.objects.create(userid=mob, vercode=pin)
+            d = OTPsms.objects.filter(userId=mob).delete()
+        r = OTPsms.objects.create(userId=mob, verifyCode=pin)
         conn = http.client.HTTPConnection("api.ghasedaksms.com")
-        payload = "type=1&param1=" + name + "&param2=" + pin + "&receptor=" + mob + "&template=verifysms2"
+        payload = "type=1&param1=" + "کاربر" + "&param2=" + pin + "&receptor=" + mob + "&template=verifysms2"
         headers = {'apikey': "rPyTiM/H76cybtptI7DDsOp4rMCWgk2KL57WRCZeR3s",
                    'content-type': "application/x-www-form-urlencoded"
                    }
@@ -40,7 +34,8 @@ class justsms(APIView):
         c1 = json.loads(data)
         return Response(c1)
 
-class sendsms(APIView):
+
+class SendSms(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -49,10 +44,10 @@ class sendsms(APIView):
         # return Response(per)
         if (per.exists()):
             pin = ''.join(random.choice('0123456789') for _ in range(4))
-            sm = sms.objects.filter(userId=mob).values()
+            sm = OTPsms.objects.filter(userId=mob).values()
             if (sm.exists()):
-                d = sms.objects.filter(userId=mob).delete()
-            r = sms.objects.create(userId=mob, verifyCode=pin)
+                d = OTPsms.objects.filter(userId=mob).delete()
+            r = OTPsms.objects.create(userId=mob, verifyCode=pin)
             conn = http.client.HTTPConnection("api.ghasedaksms.com")
             payload = "type=1&param1=" + "کاربر" + "&param2=" + pin + "&receptor=" + mob + "&template=verifysms2"
             headers = {'apikey': "rPyTiM/H76cybtptI7DDsOp4rMCWgk2KL57WRCZeR3s",
@@ -66,26 +61,31 @@ class sendsms(APIView):
         else:
             return Response({"result": "mobile number not match"})
 
-class checksms(APIView):
+
+class CheckSms(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         smscode = self.request.data.get('code')
         mob = self.request.data.get('mobile')
-        sm = sms.objects.filter(Q(userId=mob), Q(verifyCode=smscode)).values()
+        sm = OTPsms.objects.filter(Q(userId=mob), Q(verifyCode=smscode)).values()
         if (sm.exists()):
             return Response({"result": "success"})
         else:
             return Response({"result": "code does not match"})
 
+
 class GetPersonCategories(APIView):
     permission_classes = (AllowAny,)
+
     def get(self, request):
         p = Group.objects.all().values('id','name')
         return Response(p)
 
-class register(APIView):
+
+class Register(APIView):
     permission_classes = (AllowAny,)
+
     def post(self, request, *args, **kwargs):
         user = self.request.data.get('username')
         pass1 = user
@@ -104,17 +104,15 @@ class register(APIView):
             if (r.status_code == 201):
                 authid = User.objects.filter(username=user).values('id')
                 userupdate = User.objects.filter(username=user).update(last_name=ln, first_name=fn)
-                personcreate = Person.objects.create(nationalId=nid, firstName=fn, lastName=ln,authuser_id=authid,createdBy_id=authid, createdAt= timezone.now())
-                personauthcreate = PersonAuth.objects.create(person_id=nid, category_id=usercategory, active=True,
-                                                                 fillProfile=False)
+                personcreate = Person(nationalId=nid, firstName=fn, lastName=ln,authuser_id=authid, createdBy_id=authid, createdAt= timezone.now())
+                personcreate.save()
+                personauthcreate = PersonAuth.objects.create(person=personcreate, category_id=usercategory, active=True, fillProfile=False)
                 d={'key':'one user was created'}
 
             return Response(d)
 
 
-
-
-class getperson(APIView):
+class GetPerson(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):

@@ -5,6 +5,8 @@ from .models import (
     OrderStatus,
     Order,
     OrderDetails,
+    CustomerProblems,
+    TechnicianProblems,
 
 )
 # Register your models here.
@@ -13,3 +15,5 @@ admin.site.register(OrderTimeRange)
 admin.site.register(OrderStatus)
 admin.site.register(Order)
 admin.site.register(OrderDetails)
+admin.site.register(CustomerProblems)
+admin.site.register(TechnicianProblems)
