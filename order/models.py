@@ -59,7 +59,7 @@ class Order (models.Model):
     registerBy = models.ForeignKey(User, on_delete=models.CASCADE,help_text='در این فیلد ثبت کننده سفارش ذخیره می شود')
     registerDateTime=models.DateTimeField(help_text='در این فیلد زمان ثبت سفارش ذخیره می شود')
     appliance=models.ForeignKey(Appliances,on_delete=models.CASCADE,help_text='در این فیلد نوع لوازم خانگی مربط به سفارش ذخیره می شود')
-    device=models.ForeignKey(Devices, on_delete=models.CASCADE, null=True, blank=True,help_text='در این فیلد قطعه مربوط به سفارش ذخیره می شود')
+    # device=models.ForeignKey(Devices, on_delete=models.CASCADE, null=True, blank=True,help_text='در این فیلد قطعه مربوط به سفارش ذخیره می شود')
     orderKind = models.ForeignKey(KindOfOrder, on_delete=models.CASCADE,help_text='در این فیلد نوع سفارش از جدول KindOfOrder ذخیره می شود')
     orderDate=models.DateField(help_text='در این فیلد تاریخ انجام سفارش ذخیره می شود')
     orderTimeRange=models.ForeignKey(OrderTimeRange , on_delete=models.CASCADE,help_text='در این فیلد بازه زمانی انجام سفارش ذخیره می شود')
@@ -97,13 +97,24 @@ class CustomerProblems (models.Model):
                               help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
     problem=models.ForeignKey(Problems,on_delete=models.CASCADE,help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
     customerDescription=models.TextField(null=True,blank=True, help_text='دراین فیلد توضیحات مربوط به مشکلات اظهاری مشتری ذخیره میشود')
-    problemImage = models.ImageField(upload_to='images/CustomerProblems/')
 
     def __str__(self):
         return str(self.order) + '-' + str(self.problem)
 
     class Meta:
         verbose_name_plural = 'CustomerProblems'
+
+
+class CustomerProblemPic (models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              help_text='در این فیلد مشخص میشود تصویر اپدیت شده مربوط به کدام سفارش است')
+    problemImage = models.ImageField(upload_to='images/CustomerProblems/')
+
+    def __str__(self):
+        return str(self.order) + '-' + str(self.problemImage)
+
+    class Meta:
+        verbose_name_plural = 'CustomerProblemPic'
 
 
 class TechnicianProblems (models.Model):
@@ -114,7 +125,6 @@ class TechnicianProblems (models.Model):
                               help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
     problem=models.ForeignKey(Problems,on_delete=models.CASCADE,help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
     technicianDescription=models.TextField(null=True,blank=True,help_text='دراین فیلد توضیحات مربوط به مشکلات اظهاری تکنسین ذخیره میشود')
-    problemImage = models.ImageField(upload_to='images/TechnicianProblems/')
 
     def __str__(self):
         return str(self.order) + '-' + str(self.problem)
@@ -123,5 +133,14 @@ class TechnicianProblems (models.Model):
         verbose_name_plural = 'TechnicianProblems'
 
 
+class TechnicianProblemPic (models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              help_text='در این فیلد مشخص میشود تصویر اپدیت شده مربوط به کدام سفارش است')
+    problemImage = models.ImageField(upload_to='images/CustomerProblems/')
 
+    def __str__(self):
+        return str(self.order) + '-' + str(self.problemImage)
+
+    class Meta:
+        verbose_name_plural = 'CustomerProblemPic'
 

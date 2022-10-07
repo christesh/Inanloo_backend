@@ -9,8 +9,11 @@ import http.client
 import requests
 import json
 import random
-from baseinfo.models import OTPsms
-from .models import Person,PersonAuth
+from baseinfo.models import OTPsms,MembersPermission
+from .models import Person,PersonAuth,Customers, Addresses,Technician,Mobiles,CompanyMembers,MembersGroup
+from .serializres import PersonSerializer,CustomerSerializer,TechnicianSerializer,CompanyMembersSerializer,CompanyMemberSerializer
+from baseinfo.Serializers import MembersGroupSerializer,MembersPermissionSSerializer
+
 
 # Create your views here.
 class JustSms(APIView):
@@ -44,6 +47,7 @@ class SendSms(APIView):
         # return Response(per)
         if (per.exists()):
             pin = ''.join(random.choice('0123456789') for _ in range(4))
+            print(pin)
             sm = OTPsms.objects.filter(userId=mob).values()
             if (sm.exists()):
                 d = OTPsms.objects.filter(userId=mob).delete()
@@ -64,7 +68,6 @@ class SendSms(APIView):
 
 class CheckSms(APIView):
     permission_classes = (AllowAny,)
-
     def post(self, request, *args, **kwargs):
         smscode = self.request.data.get('code')
         mob = self.request.data.get('mobile')
@@ -93,7 +96,7 @@ class Register(APIView):
         fn = self.request.data.get('fname')
         usercategory=self.request.data.get('usercategory')
         nid=self.request.data.get('nationalid')
-        p = User.objects.filter(username=user).values()
+        p = User.objects.filter(username=user)
         if (p.exists()):
             return Response({"key": "username exists"})
         else:
@@ -104,19 +107,188 @@ class Register(APIView):
             if (r.status_code == 201):
                 authid = User.objects.filter(username=user).values('id')
                 userupdate = User.objects.filter(username=user).update(last_name=ln, first_name=fn)
-                personcreate = Person(nationalId=nid, firstName=fn, lastName=ln,authuser_id=authid, createdBy_id=authid, createdAt= timezone.now())
+                personcreate = Customers(nationalId=nid, firstName=fn, lastName=ln,authuser_id=authid,
+                                         createdBy_id=authid, createdAt= timezone.now())
                 personcreate.save()
-                personauthcreate = PersonAuth.objects.create(person=personcreate, category_id=usercategory, active=True, fillProfile=False)
+                personauthcreate = PersonAuth.objects.create(person=personcreate,user_id=authid, category_id=usercategory, active=True, fillProfile=False)
+                mobilecreate= Mobiles.objects.create(person=personcreate,mobileNumber=user,isMain=True)
                 d={'key':'one user was created'}
-
             return Response(d)
 
 
-class GetPerson(APIView):
+class RegisterCompanyMembers(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.data.get('username')
+        pass1 = self.request.data.get('password')
+        ln = self.request.data.get('lname')
+        fn = self.request.data.get('fname')
+        usercategory = self.request.data.get('usercategory')
+        nid = self.request.data.get('nationalid')
+        mobile = self.request.data.get('mobile')
+        group=self.request.data.get('group')
+        p = User.objects.filter(username=user)
+        creator=self.request.user.id
+        if (p.exists()):
+            return Response({"key": "username exists"})
+        else:
+            data1 = {'username': user, 'password1': pass1, 'password2': pass1}
+            r = requests.post('http://localhost:8000/api/v1/rest-auth/registration/', data=data1)
+            rt = r.text.strip()
+            d = json.loads(rt)
+            if (r.status_code == 201):
+                authid = User.objects.filter(username=user).values('id')
+                userupdate = User.objects.filter(username=user).update(last_name=ln, first_name=fn)
+                personcreate = CompanyMembers(nationalId=nid, firstName=fn, lastName=ln, authuser_id=authid,
+                                         createdBy_id=creator, createdAt=timezone.now(),membersGroup_id=group)
+                personcreate.save()
+                personauthcreate = PersonAuth.objects.create(person=personcreate, user_id=authid,
+                                                             category_id=usercategory, active=True, fillProfile=False)
+                mobilecreate = Mobiles.objects.create(person=personcreate, mobileNumber=mobile, isMain=True)
+                d = {'key': 'one user was created'}
+            return Response(d)
+
+
+class EditCompanyMembers(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        userid=self.request.data.get('userid')
+        ln = self.request.data.get('lname')
+        fn = self.request.data.get('fname')
+        nid = self.request.data.get('nationalid')
+        mobile = self.request.data.get('mobile')
+        group=self.request.data.get('group')
+        personcreate = CompanyMembers.objects.filter(id=userid).update(nationalId=nid, firstName=fn, lastName=ln, membersGroup_id=group)
+
+        mobilecreate = Mobiles.objects.filter(person_id=userid).update(mobileNumber=mobile)
+        return Response({'update':'successfully'})
+
+class GetAllMemberGroup(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        p = User.objects.filter(id=self.request.user.id).values('username')
-        per = Person.objects.filter(mobile__in=p).values()
-        return Response(per)
+        p =MembersGroup.objects.all()
+        s=MembersGroupSerializer(p,many=True)
+        return Response(s.data)
 
+
+class GetAllPermissions(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        p =MembersPermission.objects.all().values()
+        s=MembersPermissionSSerializer(p)
+        return Response(p)
+
+class GetAllPersonDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        p = Person.objects.all()
+        serializer = PersonSerializer(p, many=True)
+        return Response(serializer.data)
+
+
+class GetAllCustomersDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        p = Customers.objects.all()
+        serializer = CustomerSerializer(p, many=True)
+        return Response(serializer.data)
+
+
+class GetAllTechniciansDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        p = Technician.objects.all()
+        serializer = TechnicianSerializer(p, many=True)
+        return Response(serializer.data)
+
+
+class GetCustomersDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        id = self.request.data.get('userID')
+        p = Customers.objects.filter(id=id)
+        serializer = CustomerSerializer(p, many=True)
+        return Response(serializer.data)
+
+class GetPersonAuth(APIView):
+    # serializer_class = PersonSerializer
+    permission_classes = (IsAuthenticated,)
+    def get(self,request):
+        person_auth = PersonAuth.objects.filter(user__id=self.request.user.id).values('person','category','active','fillProfile')
+        return Response(person_auth)
+
+class GetAllCompanyMembers(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        companymember = CompanyMembers.objects.all()
+        serializer = CompanyMemberSerializer(companymember, many=True)
+        return Response(serializer.data)
+
+class GetPersonDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+    # permission_classes = (AllowAny,)
+    def get(self, request):
+        # id = self.request.data.get('userID')
+        # cid=PersonAuth.objects.filter(user_id=self.request.user.id).values('person_id')
+        p = CompanyMembers.objects.filter(authuser_id=self.request.user.id)
+        serializer = CompanyMemberSerializer(p, many=True)
+        return Response(serializer.data)
+
+class DeleteCompanyMember(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        id = self.request.data.get('userID')
+        p = CompanyMembers.objects.filter(id=id).delete()
+        # return Response({'delete': 'successful'})
+        return Response({'delete':'successful'})
+
+
+class EditMemberGroup(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        groupName = self.request.data.get('groupname')
+        geroupid=self.request.data.get('groupid')
+        pers = self.request.data.get('permissions')
+        p=MembersGroup.objects.filter(id=geroupid)
+        print (p[0])
+        p[0].permissions.clear()
+        for per in pers:
+            pp=MembersPermission.objects.filter(id=per)
+            p[0].permissions.add(pp[0])
+        s=MembersGroup.objects.filter(id=geroupid).update(group=groupName)
+        return Response({'update': 'successful'})
+
+
+class CreateMemberGroup(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        groupName = self.request.data.get('groupname')
+        permissions=self.request.data.get('permissions')
+        p=MembersGroup(group=groupName)
+        print(p)
+        p.save()
+        for per in permissions:
+            p.permissions.add(per)
+        return Response({'create': 'successful'})
+
+
+class DeleteMembersGroup(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        id = self.request.data.get('userID')
+        p = MembersGroup.objects.filter(id=id).delete()
+        # return Response({'delete': 'successful'})
+        return Response({'delete': 'successful'})

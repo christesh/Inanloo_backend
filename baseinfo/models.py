@@ -3,6 +3,18 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 
 # Create your models here.
+''' users models'''
+
+class MembersPermission(models.Model):
+
+    title=models.CharField(max_length=30)
+    active=models.BooleanField()
+    description=models.TextField(null=True,blank=True)
+    def __str__ (self):
+        return str(self.title)
+
+    class Meta:
+        verbose_name_plural = 'MembersPermission'
 
 
 class MembersGroup(models.Model):
@@ -11,12 +23,13 @@ class MembersGroup(models.Model):
     """
     group=models.CharField(max_length=40,help_text='در این فیلد عنوان گروه ها ذخیره می شود')
     description=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به گروه ها ذخیره می شود')
-
+    permissions=models.ManyToManyField(MembersPermission,null=True,blank=True)
     def __str__ (self):
         return str(self.group)
 
     class Meta:
         verbose_name_plural = 'MembersGroup'
+
 
 
 class CustomerCategory(models.Model):
@@ -60,14 +73,14 @@ class TechnicianSkills(models.Model):
     class Meta:
         verbose_name_plural = 'TechnicianSkills'
 
-
+''' appliences models'''
 class ApplianceCategories(models.Model):
     """
              در این جدول طبقه بندی مربوط به لوازم خانگی تعریف میشود
     """
     a_categoryName=models.CharField(max_length=50,help_text='در این فیلد عنوان انواع لوازم خانگی ذخیره می شود')
     a_categoryDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به لوازم خانگی ذخیره می شود')
-    a_categoryImage=models.ImageField(upload_to='images/ApplianceCategories/')
+    a_categoryImage=models.ImageField(null=True,blank=True,upload_to='images/ApplianceCategories/')
     def __str__(self):
         return str(self.a_categoryName)
 
@@ -79,10 +92,10 @@ class ApplianceBrands(models.Model):
     """
        در این جدول برندهای مربوط به لوازم خانگی تعریف میشود
     """
-    a_barndCategory=models.ForeignKey(ApplianceCategories,on_delete=models.CASCADE,help_text='در این فیلد مشخص میشود که هریک از برند های به کدام نوع از لوازم خانگی مربوط است')
+    a_barndCategory=models.ForeignKey(ApplianceCategories,on_delete=models.CASCADE,related_name='brands',help_text='در این فیلد مشخص میشود که هریک از برند های به کدام نوع از لوازم خانگی مربوط است')
     a_brandName=models.CharField(max_length=50,help_text='در این فیلد نام برند ذخیره می شود')
     a_brandDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به هر برند ذخیره می شود')
-    a_brandImage = models.ImageField(upload_to='images/ApplianceBrands/')
+    a_brandImage = models.ImageField(null=True,blank=True,upload_to='images/ApplianceBrands/')
     def __str__(self):
         return str(self.a_brandName)
 
@@ -94,12 +107,11 @@ class Appliances(models.Model):
     """
     در این جدول مدل هریک از لوازم خانگی ذخیره میشود
     """
-    applianceBrand=models.ForeignKey(ApplianceBrands,on_delete=models.CASCADE,help_text='در این فیلد مشخص میشود که هریک از مدلهای به کدام برند مربوط است')
+    applianceBrand=models.ForeignKey(ApplianceBrands,on_delete=models.CASCADE,related_name='models', help_text='در این فیلد مشخص میشود که هریک از مدلهای به کدام برند مربوط است')
     applianceModel=models.CharField(max_length=20,null=True, blank=True,help_text='در این فیلد عنوان مدل ذخیره می شود')
-    applianceSerial = models.CharField(max_length=20, null=True, blank=True,help_text='در این فیلد سریال دستگاه ذخیره میشود')
     applianceDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توصیخات موربوط به مدل دستگاه ذخیره می شود')
     applianceRate=models.FloatField(null=True,blank=True,help_text='در این فیلد برای مدل ها رنج ارزشی مالی ذخیره می شود')
-    applianceImage = models.ImageField(upload_to='images/Appliances/')
+    applianceImage = models.ImageField(null=True,blank=True,upload_to='images/Appliances/')
     def __str__(self):
         return str(self.applianceBrand) + '-' + str(self.applianceModel)
 
@@ -120,52 +132,47 @@ class AppliancesSupplier(models.Model):
     class Meta:
         verbose_name_plural = 'AppliancesSupplier'
 
-
-class DeviceCategories(models.Model):
-    """
-    در این جدول ظبقه بندی قطعات ذخیره می شود
-    """
-    d_categoryName=models.CharField(max_length=50,help_text='در این فیلد عنوان طبقه بندی قطعات ذخیره می شود')
-    d_categoryDescription=models.TextField(null=True, blank=True,help_text='در این فیلد توضیحات طبقه بندی قطعات ذخیره می شود')
-    d_categoryImage = models.ImageField(upload_to='images/DeviceCategories/')
-    def __str__(self):
-        return str(self.d_categoryName)
-
-    class Meta:
-        verbose_name_plural = 'DeviceCategories'
-
-
-class DeviceBrands(models.Model):
-    """
-        در این جدول برند ثطعات ذخیره میشود
-    """
-    d_barndCategory=models.ForeignKey(DeviceCategories,on_delete=models.CASCADE,help_text='در این فیلد نوع قطغه از اطلاعات ذخیره شده در جدول DeviceCategories ذخیره می شود')
-    d_brandName=models.CharField(max_length=50,help_text='در این فیلد عنوان برند قطعات ذخیره می شود')
-    d_brandDescription=models.TextField(null=True, blank=True,help_text='در این فیلد توصیحات برند قطعات ذخیره می شود')
-    d_brandImage = models.ImageField(upload_to='images/DeviceBrands/')
-    def __str__(self):
-        return str(self.d_brandName)
-
-    class Meta:
-        verbose_name_plural = 'DeviceBrands'
-
-
+''' devisces models'''
 class Devices(models.Model):
     """
             در این جدول اطلاعات ثطعات ذخیره میشود
     """
     appliance=models.ForeignKey(Appliances,on_delete=models.CASCADE,help_text='در این فیلد می شود این قطعه به کدام یک از لوازم خانگی مربیط است')
-    deviceBrand=models.ForeignKey(DeviceBrands,on_delete=models.CASCADE,help_text='در این فیلد می شود این قطعه به کدام یک از برندها مربیط است')
-    deviceModel=models.CharField(max_length=20,null=True,blank=True,help_text='در این فیلد مدل قطعه ذحیره می شود')
+    applianceSerial = models.CharField(max_length=20, null=True, blank=True,
+                                       help_text='در این فیلد سریال دستگاه ذخیره میشود')
     deviceDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توصیخات مدل قطعه ذحیره می شود')
     deviceImage = models.ImageField(upload_to='images/Devices/')
 
     def __str__(self):
-        return str(self.deviceBrand) + '-' + str(self.deviceBrand) + '-' + str(self.deviceModel)
+        return str(self.appliance) + '-' + str(self.applianceSerial)
 
     class Meta:
         verbose_name_plural = 'Devices'
 
+
+class DevicesGuarantee(models.Model):
+    device = models.ForeignKey(Devices, on_delete=models.CASCADE,
+                               help_text='در این فیلد مشحص میشود قیمت مربوط به کدام قطعه است')
+    guaranteeStart=models.DateField(null=True, blank=True,help_text='تاریخ تولد فرد در این فیلد ذخیره میشود')
+    guaranteePeriod=models.IntegerField(null=True, blank=True,help_text='تاریخ تولد فرد در این فیلد ذخیره میشود')
+    isValid=models.BooleanField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.device) + '-' + str(self.devicePrice) + '-' + str(self.createdDate)
+
+    class Meta:
+        verbose_name_plural = 'DevicesGuarantee'
+
+
+class DevicesGuaranteeImages(models.Model):
+    guarantee = models.ForeignKey(DevicesGuarantee, on_delete=models.CASCADE)
+    image=models.ImageField(upload_to='images/Devices/Guarantee')
+
+    def __str__(self):
+        return str(self.guarantee)
+
+    class Meta:
+        verbose_name_plural = 'DevicesGuaranteeImages'
 
 class DevicesPrice(models.Model):
     """
@@ -180,6 +187,41 @@ class DevicesPrice(models.Model):
     class Meta:
         verbose_name_plural = 'DevicesPrice'
 
+''' problems models'''
+class ApllianceCategoryProblems(models.Model):
+    """
+    در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
+    """
+    appliancescategory = models.ForeignKey(ApplianceCategories, on_delete=models.CASCADE,
+                           help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
+    problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
+    problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
+    problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
+    lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
+    highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
+    def __str__(self):
+        return str(self.problemTitle)
+
+    class Meta:
+        verbose_name_plural = 'ApllianceCategoryProblems'
+
+class BarndsProblems(models.Model):
+    """
+    در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
+    """
+    appliancesBrands = models.ForeignKey(ApplianceBrands, on_delete=models.CASCADE,
+                           help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
+    problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
+    problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
+    problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
+    lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
+    highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
+    def __str__(self):
+        return str(self.problemTitle)
+
+    class Meta:
+        verbose_name_plural = 'BarndsProblems'
+
 
 class Problems(models.Model):
     """
@@ -190,14 +232,15 @@ class Problems(models.Model):
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
     problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
-
+    lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
+    highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
         return str(self.problemTitle)
 
     class Meta:
         verbose_name_plural = 'Problems'
 
-
+'''location models'''
 class Provinces(models.Model):
     """
     در این جدول اسامی استان ها ذحیره میشود
@@ -227,11 +270,17 @@ class ProvinceGeofence(models.Model):
         verbose_name_plural = 'ProvinceGeofence'
 
 
+class Counties(models.Model):
+    province = models.ForeignKey(Provinces, on_delete=models.CASCADE, related_name="counties",
+                                 help_text='در این فیلد مشخص میشود شهرستان مربوط به کدام استان است')
+    countyName=models.CharField(max_length=50, null=False, blank=False,
+                                    help_text='در این فیلد نام شهرستان ذحیره می شود')
+
 class Cities(models.Model):
     """
     در این جدول اسامی شهرستان ها ذحیره میشود
     """
-    province = models.ForeignKey(Provinces, on_delete=models.CASCADE,help_text='در این فیلد مشخص میشود شهرستان مربوط به کدام استان است')
+    county = models.ForeignKey(Counties, on_delete=models.CASCADE,related_name="cities",help_text='در این فیلد مشخص میشود شهرستان مربوط به کدام استان است')
     cityName = models.CharField(max_length=50, null=False, blank=False,
                                     help_text='در این فیلد نام شهرستان ذحیره می شود')
     def __str__(self):
@@ -261,7 +310,7 @@ class Regions(models.Model):
     """
         در این جدول اسامی مناطق ذحیره میشود
     """
-    city=models.ForeignKey(Cities,on_delete=models.CASCADE,help_text='در این فیلد مشخص میشود منطقه مربوط به کدام شهرستان است')
+    city=models.ForeignKey(Cities,on_delete=models.CASCADE,related_name="regions",help_text='در این فیلد مشخص میشود منطقه مربوط به کدام شهرستان است')
     regionName = models.CharField(max_length=50, null=False, blank=False,help_text='در این فیلد نام منطقه ذحیره می شود')
     regionDescription= models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مناطق ذحیره می شود')
 
@@ -270,6 +319,7 @@ class Regions(models.Model):
 
     class Meta:
         verbose_name_plural = 'Regions'
+
 
 class RegionsGeofence(models.Model):
     """
@@ -290,10 +340,10 @@ class Neighbourhoods(models.Model):
     """
         در این جدول اسامی محله ها ذخیره میشود
     """
-    city = models.ForeignKey(Cities, on_delete=models.CASCADE,
+    region = models.ForeignKey(Regions, on_delete=models.CASCADE,related_name='neighbourhoods',
                              help_text='در این فیلد مشخص میشود منطقه مربوط به کدام شهرستان است')
-    neighbourhoodName = models.CharField(max_length=50, null=False, blank=False,help_text='در این فیلد نام محله ذحیره می شود')
-    neighbourhoodDescription= models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به محله ذحیره می شود')
+    neighbourhoodName = models.CharField(max_length=50, null=False,blank=False,help_text='در این فیلد نام محله ذحیره می شود')
+    neighbourhoodDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به محله ذحیره می شود')
 
     def __str__(self):
         return str(self.neighbourhoodName)
@@ -316,7 +366,7 @@ class NeighbourhoodGeofence(models.Model):
     class Meta:
         verbose_name_plural = 'NeighbourhoodGeofence'
 
-
+''' hire models'''
 class HireForm(models.Model):
     """
     در این جدول انواع فرم های مورد نیاز ذخیره میشود
@@ -344,7 +394,7 @@ class HireJson(models.Model):
     class Meta:
         verbose_name_plural = 'HireJson'
 
-
+'''sms models'''
 class OTPsms(models.Model):
     """
     در این جدول اطلاعات مربوط به پیامک های OTP ذخیره می شود
@@ -390,7 +440,7 @@ class Sms(models.Model):
     smsReceiveDateTime = models.DateTimeField(help_text='در این فیلد زمان دریافت پیامک جواب ذخیره می شود')
 
     def __str__(self):
-        return str(self.smsName) + '-' + str(self.smsKind)
+        return str(self.smsType) + '-' + str(self.receiver)
 
     class Meta:
         verbose_name_plural = 'SmsTypes'

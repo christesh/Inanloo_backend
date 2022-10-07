@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from baseinfo.models import MembersGroup, Cities, Neighbourhoods, Provinces, Regions, Devices, CustomerCategory, TechnicianCategory, TechnicianSkills
+from baseinfo.models import MembersGroup, Cities,Counties, Neighbourhoods, Provinces, Regions, Devices, CustomerCategory, TechnicianCategory, TechnicianSkills
 from django.utils.safestring import mark_safe
 
 # Create your models here.
@@ -31,8 +31,8 @@ class Customers(Person):
     در این جدول اطلاعات مشتریان ذخیره میشود
     این جدول از جدول Person ارث بری میکند و علاوه بر اطلاعات آن اطلاعات دیگری صرفا هم برای مشتریان ذخیره میکند
     """
-    customerCategory=models.ForeignKey(CustomerCategory, on_delete=models.CASCADE,help_text=' در این فیلد نوع مشتری از جدول CustomerCategory ذخیره میشود')
-    customerDevices=models.ManyToManyField(Devices,help_text=' در این فیلد لوازم خانگی مشتری از جدول Devices ذخیره میشود')
+    customerCategory=models.ForeignKey(CustomerCategory,null=True, blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع مشتری از جدول CustomerCategory ذخیره میشود')
+    customerDevices=models.ManyToManyField(Devices,null=True, blank=True,help_text=' در این فیلد لوازم خانگی مشتری از جدول Devices ذخیره میشود')
 
     def __str__(self):
         return 'Customer' +str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
@@ -65,11 +65,11 @@ class CompanyMembers(Person):
            این جدول از جدول Person ارث بری میکند و علاوه بر اطلاعات آن اطلاعات دیگری صرفا هم برای پرسنل شرکت ذخیره میکند
            """
     membersGroup= models.ForeignKey(MembersGroup, on_delete=models.CASCADE,help_text=' در این فیلد سطح دسترسی (نوع کاربری)  برای کارمند شرکت  از جدول MembersGroup ذخیره میشود')
-    hireDate=models.DateField(help_text=' در این فیلد تاریخ استخدام ذخیره میشود')
-    quitDate=models.DateField(help_text=' در این فیلد تاریخ اتمام همکاری ذخیره میشود')
+    hireDate=models.DateField(null=True, blank=True,help_text=' در این فیلد تاریخ استخدام ذخیره میشود')
+    quitDate=models.DateField(null=True, blank=True,help_text=' در این فیلد تاریخ اتمام همکاری ذخیره میشود')
 
     def __str__(self):
-        return 'CompanyMember' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
+        return 'CompanyMember' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.membersGroup)
 
     class Meta:
         verbose_name_plural = 'CompanyMembers'
@@ -79,7 +79,7 @@ class Mobiles(models.Model):
     """
     در این جدول شماره تلفن های همراه افراد ذخیره میشود
     """
-    person = models.ForeignKey(Person, on_delete=models.CASCADE,help_text=' در این فیلد مشخص میشود شماره موبایل مربوط به چه فردیست')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE,related_name='mobile',help_text=' در این فیلد مشخص میشود شماره موبایل مربوط به چه فردیست')
     mobileNumber=models.CharField(max_length=11, null=False, blank=False,help_text=' در این فیلد شماره موبایل ذخیره میشود')
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این شماره موبایل شماره موبایل اصلی قرد است یا نه')
 
@@ -94,7 +94,7 @@ class Phones(models.Model):
     """
        در این جدول شماره تلفن های ثابت افراد ذخیره میشود
        """
-    person=models.ForeignKey(Person, on_delete=models.CASCADE,help_text=' در این فیلد مشخص میشود شماره ثابت مربوط به چه فردیست')
+    person=models.ForeignKey(Person, on_delete=models.CASCADE,related_name='phones',help_text=' در این فیلد مشخص میشود شماره ثابت مربوط به چه فردیست')
     phoneNumber=models.CharField(max_length=11, null=False, blank=False,help_text=' در این فیلد شماره ثابت ذخیره میشود')
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این شماره ثابت شماره اصلی قرد است یا نه')
 
@@ -108,12 +108,14 @@ class Phones(models.Model):
 class Addresses(models.Model):
     """
            در این جدول آدرس های افراد ذخیره میشود
-           """
-    person=models.ForeignKey(Person, on_delete=models.CASCADE,help_text=' در این فیلد مشخص میشود آدرس مربوط به چه فردیست')
+    """
+    person=models.ForeignKey(Person, on_delete=models.CASCADE,related_name='address', help_text=' در این فیلد مشخص میشود آدرس مربوط به چه فردیست')
     province=models.ForeignKey(Provinces, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه استانی است')
-    city=models.ForeignKey(Cities, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
+    county = models.ForeignKey(Counties, on_delete=models.CASCADE, null=True, blank=True,
+                             help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
 
-    region=models.ForeignKey(Regions, on_delete=models.CASCADE, null=False, blank=False,help_text=' در این فیلد مشخص آدرس مربوط به چه منطقه ای است')
+    city=models.ForeignKey(Cities, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
+    region=models.ForeignKey(Regions, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه منطقه ای است')
     neighbourhood=models.ForeignKey(Neighbourhoods, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه محله ای است')
     addressLat=models.FloatField(help_text='در این فیلد عرض جعرافیایی ذحیره می شود')
     addressLong=models.FloatField(help_text='در این فیلد طول جعرافیایی ذحیره می شود')
@@ -135,6 +137,7 @@ class PersonAuth(models.Model):
     """
     در این جدول گروه کاربری فرد، فعال یا غیر فاعل بود و تکمیل بودن اطلاعات فرد ذخیره می شود
     """
+    user= models.ForeignKey(User,on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE,help_text=' در این فیلد مشخص میشود اطلاعات مربوط به چه فردیست')
     category = models.ForeignKey(Group, on_delete=models.CASCADE,help_text=' در این فیلد مشخص میشود فرد مربوط به چه گروه کاربری است')
     active = models.BooleanField(null=True, blank=True,help_text=' در این فیلد مشخص میشود فرد فعال است یا نه')
@@ -165,4 +168,5 @@ class Supplier (models.Model):
 
     class Meta:
         verbose_name_plural = 'Supplier'
+
 
