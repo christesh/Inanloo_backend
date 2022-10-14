@@ -192,7 +192,7 @@ class ApllianceCategoryProblems(models.Model):
     """
     در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
     """
-    appliancescategory = models.ForeignKey(ApplianceCategories, on_delete=models.CASCADE,
+    appliancescategory = models.ForeignKey(ApplianceCategories,related_name='appCatProblem', on_delete=models.CASCADE,
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
@@ -209,7 +209,7 @@ class BarndsProblems(models.Model):
     """
     در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
     """
-    appliancesBrands = models.ForeignKey(ApplianceBrands, on_delete=models.CASCADE,
+    appliancesBrands = models.ForeignKey(ApplianceBrands, on_delete=models.CASCADE,related_name='brandProblem',
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
@@ -227,7 +227,7 @@ class Problems(models.Model):
     """
     در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
     """
-    appliances = models.ForeignKey(Appliances, on_delete=models.CASCADE,
+    appliances = models.ForeignKey(Appliances, on_delete=models.CASCADE,related_name='modelProblem',
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')

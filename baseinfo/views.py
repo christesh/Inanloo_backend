@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import HireJson,Cities,Regions,Provinces,Neighbourhoods,Appliances,ApplianceCategories,\
-    ApllianceCategoryProblems,BarndsProblems,Problems,Counties
+    ApllianceCategoryProblems,BarndsProblems,Problems,Counties,ApplianceBrands
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -60,23 +60,66 @@ class getProblems(APIView):
             barndID="-1"
         if modelID == "":
             modelID="-1"
-        catPromble = ApllianceCategoryProblems.objects.filter(appliancescategory_id=categoryID).values('problemTitle',
+        catPromble = ApllianceCategoryProblems.objects.filter(appliancescategory_id=categoryID).values('id','problemTitle',
                                                                                                        'problemDescription',
                                                                                                        'problemKind',
                                                                                                        'lowPrice',
                                                                                                        'highPrice')
-        brandPromble = BarndsProblems.objects.filter( appliancesBrands_id=barndID).values('problemTitle',
+        brandPromble = BarndsProblems.objects.filter( appliancesBrands_id=barndID).values('id','problemTitle',
                                                                                                        'problemDescription',
                                                                                                        'problemKind',
                                                                                                        'lowPrice',
                                                                                                         'highPrice')
-        ModelPromble = Problems.objects.filter(appliances_id=modelID).values('problemTitle',
+        ModelPromble = Problems.objects.filter(appliances_id=modelID).values('id','problemTitle',
                                                                                                        'problemDescription',
                                                                                                        'problemKind',
                                                                                                        'lowPrice',
                                                                                                        'highPrice')
         qs = catPromble.union(brandPromble, ModelPromble)
         return Response(qs)
+
+
+class CreateApplianceCategoryProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        appliancescategory = self.request.data.get('appliance')
+        problemTitle = self.request.data.get('title')
+        problemDescription =self.request.data.get('description')
+        problemKind = self.request.data.get('kind')
+        lowPrice = self.request.data.get('lowprice')
+        highPrice =self.request.data.get('highprice')
+        p = ApllianceCategoryProblems(appliancescategory_id=appliancescategory,problemTitle=problemTitle,
+                                problemDescription=problemDescription,problemKind=problemKind,
+                                lowPrice=lowPrice,highPrice=highPrice)
+        p.save()
+        return Response({'appliancecategoryproblem':'created','ID' : p.id})
+
+class EditApplianceCategoryProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        appId=self.request.data.get('id')
+        problemTitle = self.request.data.get('title')
+        problemDescription =self.request.data.get('description')
+        problemKind = self.request.data.get('kind')
+        lowPrice = self.request.data.get('lowprice')
+        highPrice =self.request.data.get('highprice')
+        co = ApllianceCategoryProblems.objects.filter(id=appId).update(problemTitle=problemTitle,
+                                problemDescription=problemDescription,problemKind=problemKind,
+                                lowPrice=lowPrice,highPrice=highPrice)
+        return Response({'appliancecategoryproblem': 'edited'})
+
+
+class DeleteApplianceCategoryProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        pId=self.request.data.get('id')
+        print(pId)
+        co = ApllianceCategoryProblems.objects.filter(id=pId).delete()
+        return Response({'appliancecategoryproblem': 'deleted'})
+
 
 class CreateProvince(APIView):
     permission_classes = (IsAuthenticated,)
@@ -230,3 +273,95 @@ class DeleteNeighbourhood(APIView):
         co = Neighbourhoods.objects.filter(id=nid).delete()
 
         return Response({'neighbourhood': 'delete'})
+
+class CreateAppliance(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request,*args, **kwargs):
+        aname = self.request.data.get('appliancename')
+        p=ApplianceCategories(a_categoryName=aname)
+        p.save()
+        return Response({'appliance':'created'})
+
+class CreateBrand(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request,*args, **kwargs):
+        bname = self.request.data.get('bname')
+        bid=self.request.data.get('bid')
+        co=ApplianceBrands(a_brandName=bname,a_barndCategory_id=bid)
+        co.save()
+        return Response({'brand':'created'})
+
+
+class CreateModel(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request,*args, **kwargs):
+        mname = self.request.data.get('mname')
+        mid=self.request.data.get('mid')
+        co=Appliances(applianceModel=mname,applianceBrand_id=mid)
+        co.save()
+        return Response({'model':'created'})
+
+
+class EditAppliance(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        aname = self.request.data.get('aname')
+        aid = self.request.data.get('aid')
+        co = ApplianceCategories.objects.filter(id=aid).update(a_categoryName=aname)
+
+        return Response({'appliance': 'update'})
+
+
+class EditBrand(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        bname = self.request.data.get('bname')
+        bid = self.request.data.get('bid')
+        co = ApplianceBrands.objects.filter(id=bid).update(a_brandName=bname)
+
+        return Response({'brand': 'update'})
+
+class EditModel(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        mname = self.request.data.get('mname')
+        mid = self.request.data.get('mid')
+        co = Appliances.objects.filter(id=mid).update(applianceModel=mname)
+
+        return Response({'model': 'update'})
+
+class DeleteAppliance(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+
+        aid = self.request.data.get('aid')
+        co = ApplianceCategories.objects.filter(id=aid).delete()
+        return Response({'appliance': 'delete'})
+
+
+class DeleteBrand(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+
+        bid = self.request.data.get('bid')
+        co = ApplianceBrands.objects.filter(id=bid).delete()
+
+        return Response({'brand': 'delete'})
+
+class DeleteModel(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+
+        mid = self.request.data.get('mid')
+        co = Appliances.objects.filter(id=mid).delete()
+
+        return Response({'model': 'delete'})

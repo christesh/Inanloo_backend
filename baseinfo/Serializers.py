@@ -6,17 +6,27 @@ from .models import Sms,SmsTypes,OTPsms,NeighbourhoodGeofence,\
     Devices,ApplianceCategories,\
     TechnicianSkills,TechnicianCategory,CustomerCategory,\
     MembersGroup,Appliances, AppliancesSupplier,\
-    ApplianceBrands, Counties,MembersPermission
+    ApplianceBrands, Counties,MembersPermission,ApllianceCategoryProblems,BarndsProblems
 
 # from personal.serializres import SupplierSerializer
+class ProblemsSerialzer (serializers.ModelSerializer):
+    class Meta:
+        model=Problems
+        fields='__all__'
 
 class AppliancesSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
     model = serializers.CharField(source='applianceModel')
     description = serializers.CharField(source='applianceDescription')
+    modelProblem=ProblemsSerialzer(many=True)
     class Meta:
         model = Appliances
-        fields = ['ID','model','description']
+        fields = ['ID','model','description','modelProblem']
+
+class BarndsProblemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= BarndsProblems
+        fields ='__all__'
 
 class ApplianceBrandsSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
@@ -24,9 +34,15 @@ class ApplianceBrandsSerializer(serializers.ModelSerializer):
     brandpic = serializers.CharField(source='a_brandImage')
     description = serializers.CharField(source='a_brandDescription')
     models = AppliancesSerializer(many=True)
+    brandProblem=BarndsProblemsSerializer(many=True)
     class Meta:
         model = ApplianceBrands
-        fields = ['ID','brand','brandpic','description','models']
+        fields = ['ID','brand','brandpic','description','brandProblem','models']
+
+class ApllianceCategoryProblemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApllianceCategoryProblems
+        fields = '__all__'
 
 class ApplianceCategoriesSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
@@ -34,9 +50,10 @@ class ApplianceCategoriesSerializer(serializers.ModelSerializer):
     pic = serializers.CharField(source='a_categoryImage')
     description = serializers.CharField(source='a_categoryDescription')
     brands = ApplianceBrandsSerializer(many=True)
+    appCatProblem=ApllianceCategoryProblemsSerializer(many=True)
     class Meta:
         model = ApplianceCategories
-        fields = ['ID','title','pic','description','brands']
+        fields = ['ID','title','pic','description','appCatProblem','brands']
 
 class AppliancesSupplierSerializer(serializers.ModelSerializer):
     # supplier=SupplierSerializer()

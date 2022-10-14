@@ -1,6 +1,8 @@
 from .views import CreateDesignJson, GetAllDesignJson,GetRegins,getNabours,getApplience,getProblems,CreateProvince,\
     CreateCounty,CreateCity,CreateRegion,CreateNeighbourhood,EditProvince,EditCounty,EditCity,EditRegion,\
-    EditNeighbourhood,DeleteProvince,DeleteCounty,DeleteCity,DeleteRegion,DeleteNeighbourhood
+    EditNeighbourhood,DeleteProvince,DeleteCounty,DeleteCity,DeleteRegion,DeleteNeighbourhood,CreateAppliance,\
+    CreateBrand,CreateModel,EditAppliance,EditBrand,EditModel,DeleteAppliance,DeleteBrand,DeleteModel,\
+    CreateApplianceCategoryProblem,EditApplianceCategoryProblem,DeleteApplianceCategoryProblem
 from django.urls import path
 
 urlpatterns = [
@@ -24,5 +26,18 @@ urlpatterns = [
     path('deletecounty/', DeleteCounty.as_view()),
     path('deletecity/', DeleteCity.as_view()),
     path('deleteregion/', DeleteRegion.as_view()),
-    path('deleteneighbourhood/', DeleteNeighbourhood.as_view()),
+
+    path('createappliance/', CreateAppliance.as_view()),
+    path('createbrand/', CreateBrand.as_view()),
+    path('createmodel/', CreateModel.as_view()),
+    path('editappliance/', EditAppliance.as_view()),
+    path('editbrand/', EditBrand.as_view()),
+    path('editmodel/', EditModel.as_view()),
+    path('deleteappliance/', DeleteAppliance.as_view()),
+    path('deletebrand/', DeleteBrand.as_view()),
+    path('deletemodel/', DeleteModel.as_view()),
+    path('createappliancecategoryproblem/', CreateApplianceCategoryProblem.as_view()),
+    path('editappliancecategoryproblem/', EditApplianceCategoryProblem.as_view()),
+    path('deleteapplianceaategoryproblem/', DeleteApplianceCategoryProblem.as_view()),
+
 ]
