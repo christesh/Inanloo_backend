@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from .models import TechnicianProblemPic, CustomerProblemPic,  CustomerProblems,  \
-    TechnicianProblems, \
-    Order, OrderDetails,OrderStatus , OrderTimeRange, KindOfOrder
-from baseinfo.Serializers import ProblemsSerializer, AppliancesSerializer
-from personal.serializres import CustomersSerializer,AddressesSerializer,TechnicianSerializer
-from warehouse.serialzres import SoldIndividualDeviceSerializer
+from .models import *
+from baseinfo.Serializers import *
+from personal.serializres import *
+from warehouse.serialzres import *
 
 
 class OrderStatusSerializer(serializers.ModelSerializer):
@@ -24,17 +22,33 @@ class KindOfOrderSerializer(serializers.ModelSerializer):
         model = KindOfOrder
         fields = '__all__'
 
+class CustomerOrderProblemPic(serializers.ModelSerializer):
+    class Meta:
+        model=CustomerProblemPic
+        fields='__all__'
+
+
+class CustomerOrderApplianceGuarantee(serializers.ModelSerializer):
+    class Meta:
+        model=CustomerApplianceGuarantee
+        fields='__all__'
+
+class CustomerOrderApplianceInvoice(serializers.ModelSerializer):
+    class Meta:
+        model=CustomerApplianceInvoice
+        fields='__all__'
+
 
 class OrderSerializer(serializers.ModelSerializer):
     customer = CustomersSerializer( read_only=True)
-    appliance = AppliancesSerializer(read_only=True)
+    applianceBrand = ApplianceBrandsSerializer(read_only=True)
     # device = DevicesSerializer(many=True,read_only=True)
     orderKind = KindOfOrderSerializer(read_only=True)
     orderTimeRange = OrderTimeRangeSerializer(read_only=True)
     orderAddress = AddressesSerializer(read_only=True)
     orderStatus = OrderStatusSerializer(read_only=True)
     technician = TechnicianSerializer(read_only=True)
-
+    # registerBy=User(read_only=True)
     class Meta:
         model = Order
         # fields = ['customer','appliance','orderKind','orderTimeRange','orderAddress','orderAddress']

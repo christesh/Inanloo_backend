@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-
+from firebase_admin import initialize_app
+import os
+# from firebase_admin import credentials
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,6 +30,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost','mersa-group.ir']
 
 
+# cred = credentials.Certificate("./inanloo-firebase-adminsdk-3c4k6-360fb5ac47.json")
+FIREBASE_APP = initialize_app()
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'fcm_django',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -63,7 +68,7 @@ INSTALLED_APPS = [
     # 'django_otp.plugins.otp_hotp',
     # 'django_otp.plugins.otp_static',
 ]
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="inanloo-firebase-adminsdk-3c4k6-360fb5ac47.json"
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -97,6 +102,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inanloo_service.wsgi.application'
 
+FCM_DJANGO_SETTINGS = {
+    # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "django_fcm",
+    # Your firebase API KEY
+    "FCM_SERVER_KEY": "AIzaSyDEGgPUmMIobIIOk709tddihQJa2SEoUS4",
+    # true if you want to have only one active device per registered user at a time
+    # default: False
+    "ONE_DEVICE_PER_USER": False,
+    # devices to which notifications cannot be sent,
+    # are deleted upon receiving error response from FCM
+    # default: False
+    "DELETE_INACTIVE_DEVICES": True,
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

@@ -1,12 +1,19 @@
 from django.shortcuts import render
-from .models import HireJson,Cities,Regions,Provinces,Neighbourhoods,Appliances,ApplianceCategories,\
-    ApllianceCategoryProblems,BarndsProblems,Problems,Counties,ApplianceBrands
+from django.views import View
+
+from .models import *
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .Serializers import RegionsSerializer,ProvincesSerializer,NabourHoodsSerializer,AppliancesSerializer,ApplianceCategoriesSerializer
+from .Serializers import *
 import json
+from firebase_admin.messaging import Message, Notification
+from fcm_django.models import FCMDevice
+from firebase_admin.messaging import Message, Notification
+from django.contrib.auth.models import User, Group
+
 # Create your views here.
+
 class CreateDesignJson (APIView):
     permission_classes = (AllowAny,)
     def post(self, request, *args, **kwargs):
@@ -60,12 +67,13 @@ class getProblems(APIView):
             barndID="-1"
         if modelID == "":
             modelID="-1"
+        print(modelID)
         catPromble = ApllianceCategoryProblems.objects.filter(appliancescategory_id=categoryID).values('id','problemTitle',
                                                                                                        'problemDescription',
                                                                                                        'problemKind',
                                                                                                        'lowPrice',
                                                                                                        'highPrice')
-        brandPromble = BarndsProblems.objects.filter( appliancesBrands_id=barndID).values('id','problemTitle',
+        brandPromble = BarndsProblems.objects.filter(appliancesBrands_id=barndID).values('id','problemTitle',
                                                                                                        'problemDescription',
                                                                                                        'problemKind',
                                                                                                        'lowPrice',
@@ -90,7 +98,7 @@ class CreateApplianceCategoryProblem(APIView):
         lowPrice = self.request.data.get('lowprice')
         highPrice =self.request.data.get('highprice')
         p = ApllianceCategoryProblems(appliancescategory_id=appliancescategory,problemTitle=problemTitle,
-                                problemDescription=problemDescription,problemKind=problemKind,
+                                problemDescription=problemDescription,problemKind_id=problemKind,
                                 lowPrice=lowPrice,highPrice=highPrice)
         p.save()
         return Response({'appliancecategoryproblem':'created','ID' : p.id})
@@ -118,6 +126,48 @@ class DeleteApplianceCategoryProblem(APIView):
         pId=self.request.data.get('id')
         print(pId)
         co = ApllianceCategoryProblems.objects.filter(id=pId).delete()
+        return Response({'appliancecategoryproblem': 'deleted'})
+
+
+class CreateBrandProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        brand = self.request.data.get('brand')
+        problemTitle = self.request.data.get('title')
+        problemDescription =self.request.data.get('description')
+        problemKind = self.request.data.get('kind')
+        lowPrice = self.request.data.get('lowprice')
+        highPrice =self.request.data.get('highprice')
+        p = BarndsProblems(appliancesBrands_id=brand,problemTitle=problemTitle,
+                                problemDescription=problemDescription,problemKind=problemKind,
+                                lowPrice=lowPrice,highPrice=highPrice)
+        p.save()
+        return Response({'brandcategoryproblem':'created','ID': p.id})
+
+class EditBrandProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        brandId=self.request.data.get('id')
+        problemTitle = self.request.data.get('title')
+        problemDescription =self.request.data.get('description')
+        problemKind = self.request.data.get('kind')
+        lowPrice = self.request.data.get('lowprice')
+        highPrice =self.request.data.get('highprice')
+        co = BarndsProblems.objects.filter(id=brandId).update(problemTitle=problemTitle,
+                                problemDescription=problemDescription,problemKind=problemKind,
+                                lowPrice=lowPrice,highPrice=highPrice)
+        return Response({'brandcategoryproblem': 'edited'})
+
+
+class DeleteBrandProblem(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        bpId=self.request.data.get('id')
+        print(bpId)
+        co = BarndsProblems.objects.filter(id=bpId).delete()
         return Response({'appliancecategoryproblem': 'deleted'})
 
 
@@ -365,3 +415,57 @@ class DeleteModel(APIView):
         co = Appliances.objects.filter(id=mid).delete()
 
         return Response({'model': 'delete'})
+
+
+class GetProblemKind(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request):
+        allkind=ProblemsKind.objects.all().values()
+        return Response(allkind)
+
+
+class CreateFCMDevice(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        token=self.request.data.get('tokenFcm')
+        userid=self.request.data.get('userId')
+        # type = self.request.data.get('type')
+        ff=FCMDevice.objects.filter(user_id=userid).delete()
+        fcm_device = FCMDevice()
+        fcm_device.registration_id = token
+        fcm_device.user = User.objects.get(id=userid)
+        fcm_device.save()
+        return Response({'response':'Device registe for FCM by id:'+str(fcm_device.id)})
+
+
+class SendFCM(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        users= request.POST.get('users')
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        push = request.POST.get('push')
+
+        if push:
+            message = Message(
+                notification=Notification(
+                    title=title,
+                    body=content,
+                ),
+                data={
+                    "Nick": "Mario",
+                    "body": "great match!",
+                    "Room": "PortugalVSDenmark"
+                },
+            )
+
+            try:
+                devices = FCMDevice.objects.get(user_id=users)
+                devices.send_message(message)
+            except Exception as e:
+                print('Push notification failed.', e)
+                return Response({'response':'Push notification failed.'})
+        return Response({'response': 'Push notification send'})

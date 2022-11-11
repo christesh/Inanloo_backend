@@ -60,18 +60,7 @@ class TechnicianCategory(models.Model):
         verbose_name_plural = 'TechnicianCategory'
 
 
-class TechnicianSkills(models.Model):
-    """
-          در این جدول مهارتهای مربوط به تکنسین ها تعریف میشود
-    """
-    skill=models.CharField(max_length=50,help_text='در این فیلد عنوان  مهارتها ذخیره می شود')
-    skillDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مهارتها ذخیره می شود')
 
-    def __str__(self):
-        return str(self.skill)
-
-    class Meta:
-        verbose_name_plural = 'TechnicianSkills'
 
 ''' appliences models'''
 class ApplianceCategories(models.Model):
@@ -187,6 +176,18 @@ class DevicesPrice(models.Model):
     class Meta:
         verbose_name_plural = 'DevicesPrice'
 
+
+class ProblemsKind(models.Model):
+    title = models.CharField(max_length=20)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return str(self.title)
+
+    class Meta:
+        verbose_name_plural = 'ProblemsKind'
+
+
 ''' problems models'''
 class ApllianceCategoryProblems(models.Model):
     """
@@ -196,7 +197,7 @@ class ApllianceCategoryProblems(models.Model):
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
-    problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
+    problemKind = models.ForeignKey(ProblemsKind,null=True,blank=True,on_delete=models.CASCADE, help_text='در این فیلد نوع مشکل ذخیره می شود')
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
@@ -213,7 +214,8 @@ class BarndsProblems(models.Model):
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
-    problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
+    problemKind = models.ForeignKey(ProblemsKind, null=True, blank=True, on_delete=models.CASCADE,
+                                    help_text='در این فیلد نوع مشکل ذخیره می شود')
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
@@ -231,7 +233,7 @@ class Problems(models.Model):
                            help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
     problemTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
     problemDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
-    problemKind=models.CharField(max_length=20,help_text='در این فیلد نوع مشکل ذخیره می شود')
+    problemKind = models.ForeignKey(ProblemsKind,null=True,blank=True,on_delete=models.CASCADE, help_text='در این فیلد نوع مشکل ذخیره می شود')
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
@@ -239,6 +241,7 @@ class Problems(models.Model):
 
     class Meta:
         verbose_name_plural = 'Problems'
+
 
 '''location models'''
 class Provinces(models.Model):
@@ -276,6 +279,7 @@ class Counties(models.Model):
     countyName=models.CharField(max_length=50, null=False, blank=False,
                                     help_text='در این فیلد نام شهرستان ذحیره می شود')
 
+
 class Cities(models.Model):
     """
     در این جدول اسامی شهرستان ها ذحیره میشود
@@ -297,7 +301,6 @@ class CityGeofence(models.Model):
     city = models.ForeignKey(Cities,on_delete=models.CASCADE, null=False, blank=False,help_text='در این فیلد می شود نقطه محدوده مربوط به کدام شهرستان است')
     cityLat = models.FloatField(help_text='در این فیلد عرض جعرافیایی ذحیره می شود')
     cityLong = models.FloatField(help_text='در این فیلد طول جغرافیایی ذحیره می شود')
-
 
     def __str__(self):
         return str(self.city) + '-' + str(self.cityLat) + '-' + str(self.cityLong)

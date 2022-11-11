@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Supplier,Customers, CompanyMembers, \
     Addresses, Technician, Person,Mobiles,Phones,PersonAuth
-from baseinfo.Serializers import MembersGroupSerializer, CustomerCategory,TechnicianCategory,ProvincesSerializer
+from baseinfo.Serializers import MembersGroupSerializer, CustomerCategory,TechnicianCategory,ProvincesSerializerV2,\
+    CountiesSerializerV2,CitiesSerializerV2,RegionsSerializerV2,NabourHoodsSerializer,ProvincesSerializer
 
 
 
@@ -56,9 +57,19 @@ class AddressesSerializer(serializers.ModelSerializer):
         model = Addresses
         fields = ['id','province','addressStreet','addressLane','addressNo','addressUnit','addressFloor','isMain','addressLat','addressLong']
 
+class AddressesSerializerV2(serializers.ModelSerializer):
+    province = ProvincesSerializerV2()
+    county=CountiesSerializerV2()
+    city = CitiesSerializerV2()
+    region = RegionsSerializerV2()
+    neighbourhood = NabourHoodsSerializer()
+    class Meta:
+        model = Addresses
+        fields = '__all__'
+        # fields = ['id','province_id','province2']
 
 class PersonSerializer(serializers.ModelSerializer):
-    address=AddressesSerializer(many=True)
+    address=AddressesSerializerV2(many=True)
     mobile=MobilesSerializer(many=True)
     phones=PhonesSerializer(many=True)
     class Meta:
@@ -68,7 +79,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
 class CustomerSerializer(serializers.ModelSerializer):
     # person=PersonSerializer(many=True)
-    address = AddressesSerializer(many=True)
+    address = AddressesSerializerV2(many=True)
     mobile = MobilesSerializer(many=True)
     phones = PhonesSerializer(many=True)
     class Meta:
@@ -78,7 +89,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 class CompanyMemberSerializer(serializers.ModelSerializer):
     # person=PersonSerializer(many=True)
-    address = AddressesSerializer(many=True)
+    address = AddressesSerializerV2(many=True)
     mobile = MobilesSerializer(many=True)
     phones = PhonesSerializer(many=True)
     membersGroup=MembersGroupSerializer()
@@ -89,14 +100,14 @@ class CompanyMemberSerializer(serializers.ModelSerializer):
                   'hireDate','quitDate']
 
 class TechnicianSerializer (serializers.ModelSerializer):
-    address = AddressesSerializer(many=True)
+    address = AddressesSerializerV2(many=True)
     mobile = MobilesSerializer(many=True)
     phones = PhonesSerializer(many=True)
 
     class Meta:
         model = Technician
         fields = ['id', 'firstName', 'lastName', 'nationalId', 'phones', 'mobile', 'address', 'technicianCategory',
-                  'technicianSkills', 'technicianDevices', 'technicianRank', 'activate', 'hireForm']
+                  'technicianFavourite', 'technicianRank', 'activate','status', 'hireForm']
 
 
 class PersonAuthSerializer(serializers.ModelSerializer):

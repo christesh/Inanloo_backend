@@ -1,7 +1,4 @@
-from .views import SendSms, Register, CheckSms, GetPersonCategories, JustSms, GetAllPersonDetails,GetCustomersDetails,\
-    GetAllCustomersDetails,GetAllTechniciansDetails,GetPersonAuth,RegisterCompanyMembers,GetAllMemberGroup,\
-    GetAllCompanyMembers,GetPersonDetails,EditCompanyMembers,DeleteCompanyMember,GetAllPermissions,CreateMemberGroup,\
-    EditMemberGroup,DeleteMembersGroup
+from .views import *
 from django.urls import path
 
 urlpatterns = [
@@ -15,7 +12,7 @@ urlpatterns = [
     path('getalltechniciansdetails/', GetAllTechniciansDetails.as_view()),
     # path('getpersondetails/', GetPersonDetails.as_view()),
     path('getcustomersdetails/', GetCustomersDetails.as_view()),
-    # path('gettechniciansdetails/', GetTechniciansDetails.as_view()),
+    path('gettechniciansdetails/', GetTechniciansDetails.as_view()),
     path('getpersonauth/', GetPersonAuth.as_view()),
     path('getallmembergroup/', GetAllMemberGroup.as_view()),
     path('registercompanymembers/', RegisterCompanyMembers.as_view()),
@@ -27,4 +24,9 @@ urlpatterns = [
     path('createmembergroup/', CreateMemberGroup.as_view()),
     path('editmembergroup/', EditMemberGroup.as_view()),
     path('deletemembersgroup/', DeleteMembersGroup.as_view()),
+    path('createcustomeraddress/', CreateCustomerAddress.as_view()),
+    path('editcustomeraddress/', EditCustomerAddress.as_view()),
+    path('deletecustomeraddress/', DeleteCustomerAddress.as_view()),
+    path('changepass/', changepass.as_view()),
+    path('ForgetSendSms/', ForgetSendSms.as_view()),
 ]

@@ -6,7 +6,7 @@ from baseinfo.models import (
     RegionsGeofence,
     CustomerCategory,
     TechnicianCategory,
-    TechnicianSkills,
+
     Devices,
     HireJson,
     HireForm,
@@ -29,7 +29,8 @@ from baseinfo.models import (
     BarndsProblems,
     DevicesGuarantee,
     DevicesGuaranteeImages,
-    MembersPermission
+    MembersPermission,
+    ProblemsKind,
 
 )
 admin.site.register(AppliancesSupplier)
@@ -53,7 +54,7 @@ admin.site.register(Provinces)
 admin.site.register(RegionsGeofence)
 admin.site.register(CustomerCategory)
 admin.site.register(TechnicianCategory)
-admin.site.register(TechnicianSkills)
+
 admin.site.register(DevicesGuarantee)
 admin.site.register(DevicesGuaranteeImages)
 admin.site.register(Devices)
@@ -62,3 +63,4 @@ admin.site.register(HireJson)
 admin.site.register(OTPsms)
 admin.site.register(Sms)
 admin.site.register(SmsTypes)
+admin.site.register(ProblemsKind)

@@ -6,7 +6,7 @@ from .models import (
     Order,
     OrderDetails,
     CustomerProblems,
-    TechnicianProblems,
+    TechnicianProblems,CustomerProblemPic,
 
 )
 # Register your models here.
@@ -17,3 +17,4 @@ admin.site.register(Order)
 admin.site.register(OrderDetails)
 admin.site.register(CustomerProblems)
 admin.site.register(TechnicianProblems)
+admin.site.register(CustomerProblemPic)

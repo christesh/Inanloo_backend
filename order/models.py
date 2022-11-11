@@ -1,7 +1,7 @@
 
 from django.db import models
 from personal.models import Customers,Technician,CompanyMembers,Addresses
-from baseinfo.models import Appliances, Devices, Problems
+from baseinfo.models import Appliances, Devices, Problems,ApplianceBrands,BarndsProblems,ApllianceCategoryProblems
 from django.contrib.auth.models import User, Group
 from warehouse.models import SoldIndividualDevice
 # Create your models here.
@@ -58,16 +58,17 @@ class Order (models.Model):
     customer=models.ForeignKey(Customers,on_delete=models.CASCADE,help_text='در این فیلد مشخص می شود سفارش مربوط به کدام مشتری است')
     registerBy = models.ForeignKey(User, on_delete=models.CASCADE,help_text='در این فیلد ثبت کننده سفارش ذخیره می شود')
     registerDateTime=models.DateTimeField(help_text='در این فیلد زمان ثبت سفارش ذخیره می شود')
-    appliance=models.ForeignKey(Appliances,on_delete=models.CASCADE,help_text='در این فیلد نوع لوازم خانگی مربط به سفارش ذخیره می شود')
-    # device=models.ForeignKey(Devices, on_delete=models.CASCADE, null=True, blank=True,help_text='در این فیلد قطعه مربوط به سفارش ذخیره می شود')
-    orderKind = models.ForeignKey(KindOfOrder, on_delete=models.CASCADE,help_text='در این فیلد نوع سفارش از جدول KindOfOrder ذخیره می شود')
+    applianceBrand = models.ForeignKey(ApplianceBrands, on_delete=models.CASCADE,
+                                       help_text='در این فیلد نوع لوازم خانگی مربط به سفارش ذخیره می شود')
+    applianceModel=models.ForeignKey(Appliances,null=True,blank=True,on_delete=models.CASCADE,db_constraint=False,help_text='در این فیلد نوع لوازم خانگی مربط به سفارش ذخیره می شود')
+    applianceSerial = models.CharField(max_length=30,null=True,blank=True,help_text='در این فیلد نوع لوازم خانگی مربط به سفارش ذخیره می شود')
+    orderKind = models.ForeignKey(KindOfOrder,null=True,blank=True, on_delete=models.CASCADE,db_constraint=False,help_text='در این فیلد نوع سفارش از جدول KindOfOrder ذخیره می شود')
     orderDate=models.DateField(help_text='در این فیلد تاریخ انجام سفارش ذخیره می شود')
     orderTimeRange=models.ForeignKey(OrderTimeRange , on_delete=models.CASCADE,help_text='در این فیلد بازه زمانی انجام سفارش ذخیره می شود')
     orderAddress = models.ForeignKey(Addresses, on_delete=models.CASCADE,help_text='در این فیلد آدرس انجام سفارش ذخیره می شود')
     orderStatus=models.ForeignKey(OrderStatus, on_delete=models.CASCADE,help_text='در این فیلد وضعیت سفارش ذخیره می شود')
-    technician = models.ForeignKey(Technician, on_delete=models.CASCADE, null=True, blank=True,help_text='در این فیلد تکنسین انجام دهنده سفارش ذخیره می شود')
+    technician = models.ForeignKey(Technician,null=True,blank=True,db_constraint=False, on_delete=models.CASCADE,help_text='در این فیلد تکنسین انجام دهنده سفارش ذخیره می شود')
     description = models.TextField(null=True,blank=True, help_text='در این فیلد توضیحات مازاد مربوط به انجام سفارش ذخیره می شود')
-
     def __str__(self):
         return str(self.customer) + '-' +str(self.registerDateTime)
 
@@ -93,9 +94,14 @@ class CustomerProblems (models.Model):
     """
     در این جدول عیوب اظهاری مشتری ذخیره میشود
     """
-    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+    order = models.ForeignKey(Order,null=True,blank=True, on_delete=models.CASCADE,
                               help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
-    problem=models.ForeignKey(Problems,on_delete=models.CASCADE,help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+    categoryProblem = models.ForeignKey(ApllianceCategoryProblems, null=True, blank=True, on_delete=models.CASCADE,
+                                help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+    brandproblem = models.ForeignKey(BarndsProblems, null=True, blank=True, on_delete=models.CASCADE,
+                                help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+
+    modelProblem=models.ForeignKey(Problems,null=True,blank=True,on_delete=models.CASCADE,help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
     customerDescription=models.TextField(null=True,blank=True, help_text='دراین فیلد توضیحات مربوط به مشکلات اظهاری مشتری ذخیره میشود')
 
     def __str__(self):
@@ -143,4 +149,40 @@ class TechnicianProblemPic (models.Model):
 
     class Meta:
         verbose_name_plural = 'CustomerProblemPic'
+
+
+class CustomerAppliance(models.Model):
+    customer=models.ForeignKey(Customers,on_delete=models.CASCADE)
+    applianceModel=models.ForeignKey(Appliances,null=True,blank=True,on_delete=models.CASCADE)
+    applianceSerial = models.CharField(max_length=30, null=True, blank=True)
+    def __str__(self):
+        return str(self.customer) + '-' + str(self.appliance)
+
+    class Meta:
+        verbose_name_plural = 'CustomerAppliance'
+
+
+class CustomerApplianceGuarantee(models.Model):
+    customerAppliance=models.ForeignKey(CustomerAppliance,on_delete=models.CASCADE)
+    guaranteePic=models.ImageField(upload_to='images/CustomerApplianceGuarantee/')
+    guaranteeStartDate=models.CharField(max_length=30, null=True, blank=True)
+    guaranteeEndDate=models.CharField(max_length=30, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.customerAppliance) + '-' + str(self.guaranteeStartDate)
+
+    class Meta:
+        verbose_name_plural = 'CustomerApplianceGuarantee'
+
+
+class CustomerApplianceInvoice(models.Model):
+    customerAppliance=models.ForeignKey(CustomerAppliance,on_delete=models.CASCADE)
+    invoicePic=models.ImageField(upload_to='images/CustomerApplianceInvoice/')
+
+    def __str__(self):
+        return str(self.customerAppliance)
+
+    class Meta:
+        verbose_name_plural = 'CustomerApplianceInvoice'
+
 

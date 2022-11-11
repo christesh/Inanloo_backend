@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from baseinfo.models import MembersGroup, Cities,Counties, Neighbourhoods, Provinces, Regions, Devices, CustomerCategory, TechnicianCategory, TechnicianSkills
+from baseinfo.models import *
 from django.utils.safestring import mark_safe
 
 # Create your models here.
@@ -32,7 +32,7 @@ class Customers(Person):
     این جدول از جدول Person ارث بری میکند و علاوه بر اطلاعات آن اطلاعات دیگری صرفا هم برای مشتریان ذخیره میکند
     """
     customerCategory=models.ForeignKey(CustomerCategory,null=True, blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع مشتری از جدول CustomerCategory ذخیره میشود')
-    customerDevices=models.ManyToManyField(Devices,null=True, blank=True,help_text=' در این فیلد لوازم خانگی مشتری از جدول Devices ذخیره میشود')
+    customerDevices=models.ManyToManyField(Appliances,null=True, blank=True,help_text=' در این فیلد لوازم خانگی مشتری از جدول Devices ذخیره میشود')
 
     def __str__(self):
         return 'Customer' +str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
@@ -46,17 +46,45 @@ class Technician(Person):
        در این جدول اطلاعات تکنسین ها ذخیره میشود
        این جدول از جدول Person ارث بری میکند و علاوه بر اطلاعات آن اطلاعات دیگری صرفا هم برای تکنسین ها ذخیره میکند
        """
-    technicianCategory = models.ForeignKey(TechnicianCategory, on_delete=models.CASCADE,help_text=' در این فیلد نوع تکنسین از جدول TechnicianCategory ذخیره میشود')
-    technicianSkills= models.ManyToManyField(TechnicianSkills,help_text=' در این فیلد مهارت های تکنسین از جدول TechnicianSkills ذخیره میشود')
-    technicianDevices=models.ManyToManyField(Devices,help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
-    technicianRank=models.FloatField(help_text=' در این فیلد گرید تکنسین ذخیره میشود')
-    activate=models.BooleanField(help_text=' در این فیلد فعال بودن یا نبود تکنسین ذخیره میشود')
-    hireForm=models.TextField(help_text=' در این فیلد اطلاعات فرم استخدامی تکنسین به صورت Json ذخیره میشود')
+    technicianCategory = models.ForeignKey(TechnicianCategory,null=True,blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع تکنسین از جدول TechnicianCategory ذخیره میشود')
+    # technicianApplianceCategory= models.ManyToManyField(ApplianceCategories,null=True,blank=True,help_text=' در این فیلد مهارت های تکنسین از جدول TechnicianSkills ذخیره میشود')
+    # technicianSkill=models.ManyToManyField(TechnicianSkills,null=True,blank=True,help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
+    technicianFavourite = models.TextField(null=True,blank=True,
+                                             help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
+    technicianRank=models.FloatField(null=True,blank=True,help_text=' در این فیلد گرید تکنسین ذخیره میشود')
+    activate=models.BooleanField(null=True,blank=True,help_text=' در این فیلد فعال بودن یا نبود تکنسین ذخیره میشود')
+    statusChoice = (
+        ('0', 'ثبت نام اولیه'),
+        ('1', 'مصاحبه اولیه'),
+        ('2', 'مصاحبه فنی'),
+        ('3', 'استخدام'),
+        ('4', 'پایان همکاری'),
+
+    )
+    status=models.CharField(null=True,blank=True,max_length=20,choices=statusChoice)
+    hireForm=models.TextField(null=True,blank=True,help_text=' در این فیلد اطلاعات فرم استخدامی تکنسین به صورت Json ذخیره میشود')
+
     def __str__(self):
         return 'Technician' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId) +'-'+str(self.activate)
 
     class Meta:
         verbose_name_plural = 'Technician'
+
+class TechnicianSkills(models.Model):
+    """
+          در این جدول مهارتهای مربوط به تکنسین ها تعریف میشود
+    """
+    techneician=models.ForeignKey(Technician,on_delete=models.CASCADE)
+    technicianBrand = models.ManyToManyField(ApplianceBrands, null=True, blank=True,
+                                             help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
+    installation=models.BooleanField()
+    fix=models.BooleanField()
+    skillDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مهارتها ذخیره می شود')
+    def __str__(self):
+        return str(self.techneician)
+
+    class Meta:
+        verbose_name_plural = 'TechnicianSkills'
 
 
 class CompanyMembers(Person):
@@ -117,13 +145,15 @@ class Addresses(models.Model):
     city=models.ForeignKey(Cities, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
     region=models.ForeignKey(Regions, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه منطقه ای است')
     neighbourhood=models.ForeignKey(Neighbourhoods, on_delete=models.CASCADE, null=True, blank=True,help_text=' در این فیلد مشخص آدرس مربوط به چه محله ای است')
-    addressLat=models.FloatField(help_text='در این فیلد عرض جعرافیایی ذحیره می شود')
-    addressLong=models.FloatField(help_text='در این فیلد طول جعرافیایی ذحیره می شود')
+    addressLat=models.FloatField(null=True, blank=True,help_text='در این فیلد عرض جعرافیایی ذحیره می شود')
+    addressLong=models.FloatField(null=True, blank=True,help_text='در این فیلد طول جعرافیایی ذحیره می شود')
     addressStreet=models.TextField(null=False, blank=False,help_text='در این فیلد اسم خیابان ذحیره می شود')
+    addressSubStreet = models.TextField(null=True, blank=True, help_text='در این فیلد اسم خیابان ذحیره می شود')
     addressLane = models.TextField(null=False, blank=False,help_text='در این فیلد اسم کوچه ذحیره می شود')
-    addressNo=models.SmallIntegerField(null=False, blank=False,help_text='در این فیلد پلاک ذحیره می شود')
-    addressUnit=models.SmallIntegerField(null=True, blank=True,help_text='در این فیلد واحد ذحیره می شود')
-    addressFloor=models.SmallIntegerField(null=False, blank=False,help_text='در این فیلد طبقه ذحیره می شود')
+    addressBuilding = models.TextField(null=True, blank=True, help_text='در این فیلد اسم کوچه ذحیره می شود')
+    addressNo=models.CharField(max_length=30, null=False, blank=False,help_text='در این فیلد پلاک ذحیره می شود')
+    addressUnit=models.CharField(max_length=30,null=True, blank=True,help_text='در این فیلد واحد ذحیره می شود')
+    addressFloor=models.CharField(max_length=30,null=False, blank=False,help_text='در این فیلد طبقه ذحیره می شود')
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این آدرس اصلی قرد است یا نه')
 
     def __str__(self):

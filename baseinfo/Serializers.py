@@ -4,7 +4,7 @@ from .models import Sms,SmsTypes,OTPsms,NeighbourhoodGeofence,\
     Neighbourhoods,RegionsGeofence,Regions,CityGeofence,\
     Cities,ProvinceGeofence,Provinces,Problems,DevicesPrice,\
     Devices,ApplianceCategories,\
-    TechnicianSkills,TechnicianCategory,CustomerCategory,\
+    TechnicianCategory,CustomerCategory,\
     MembersGroup,Appliances, AppliancesSupplier,\
     ApplianceBrands, Counties,MembersPermission,ApllianceCategoryProblems,BarndsProblems
 
@@ -35,9 +35,10 @@ class ApplianceBrandsSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='a_brandDescription')
     models = AppliancesSerializer(many=True)
     brandProblem=BarndsProblemsSerializer(many=True)
+
     class Meta:
         model = ApplianceBrands
-        fields = ['ID','brand','brandpic','description','brandProblem','models']
+        fields = ['ID','brand','brandpic','description','brandProblem','models','a_barndCategory']
 
 class ApllianceCategoryProblemsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -100,7 +101,6 @@ class NabourHoodsSerializer(serializers.ModelSerializer):
         model= Neighbourhoods
         fields = ['id','neighbourhoodName','neighbourhoodDescription']
 
-
 class RegionsSerializer (serializers.ModelSerializer):
     neighbourhoods = NabourHoodsSerializer(many=True)
     class Meta:
@@ -125,6 +125,35 @@ class ProvincesSerializer (serializers.ModelSerializer):
     class Meta:
         model = Provinces
         fields = ['id','provinceName','counties']
+
+
+class RegionsSerializerV2 (serializers.ModelSerializer):
+    # neighbourhoods = NabourHoodsSerializer(many=True)
+    class Meta:
+        model = Regions
+        fields = ['id','regionName']
+
+
+class CitiesSerializerV2 (serializers.ModelSerializer):
+    # regions = RegionsSerializer(many=True)
+    class Meta:
+        model = Cities
+        fields = ['id','cityName']
+
+
+class CountiesSerializerV2 (serializers.ModelSerializer):
+    # cities=CitiesSerializer(many=True)
+    class Meta:
+        model = Counties
+        fields =['id','countyName']
+
+
+class ProvincesSerializerV2 (serializers.ModelSerializer):
+    # counties=CountiesSerializer(many=True)
+    class Meta:
+        model = Provinces
+        fields = ['id','provinceName']
+
 
 class SmsTypesSerializer (serializers.ModelSerializer):
     class Meta:
