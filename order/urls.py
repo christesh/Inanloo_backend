@@ -10,5 +10,7 @@ urlpatterns = [
     path('uploadguaranteepic/', uploadGuaranteePic.as_view()),
     path('createcustomerappliance/', CreateCustomerAppliance.as_view()),
     path('uploaduaranteeinvoicepic/', uploadGuaranteeInvoicePic.as_view()),
-    path('getcustomerorders/', GetCustomerOrders.as_view())
+    path('getcustomerorders/', GetCustomerOrders.as_view()),
+    path('sendnotif/', sendnotif.as_view()),
+    path('gettimerange/', GetTimeRange.as_view())
 ]

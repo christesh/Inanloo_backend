@@ -10,6 +10,7 @@ from personal.models import *
 from django.contrib.auth.models import User, Group
 from baseinfo.models import *
 from .models import *
+from websocket.consumers import ChatConsumer
 # Create your views here.
 
 class GetAllOrders (APIView):
@@ -33,7 +34,7 @@ class CreateOrder (APIView):
         customer =Customers.objects.get(id=order['customerID'])
         registerBy =User.objects.get(id=order['registerID'])
         registerDateTime=datetime.now()
-
+        problemPics = dict((request.data).lists())['problemPic']
         brand =ApplianceBrands.objects.get(id=order['brandID'])
         od=order['orderDate'].split('/')
         orderDate =jdatetime.date(int(od[0]),int(od[1]),int(od[2])).togregorian()
@@ -53,8 +54,33 @@ class CreateOrder (APIView):
         )
         print(12)
         orderobj.save()
-        return Response(orderobj.id)
+        flag = 1
+        cnt = 0
+        arr = []
+        for img_name in problemPics:
+            modified_data = modify_input_for_multiple_files(orderobj.id,
+                                                            img_name)
+            file_serializer = CustomerOrderProblemPic(data=modified_data)
+            if file_serializer.is_valid():
+                cnt += 1
+                file_serializer.save()
+                arr.append(file_serializer.data)
+            else:
+                flag = 0
 
+        return Response({'result':'order id:'+orderobj.id})
+
+def modify_input_for_multiple_files(property_id, image):
+    dict = {}
+    dict['order'] = property_id
+    dict['problemImage'] = image
+    return dict
+
+class sendnotif(APIView):
+    permission_classes = (AllowAny,)
+    def get(self,request):
+        data={'message':'salam'}
+        ChatConsumer.notif(self,data)
 
 class uploadCustomersProblemsPic(APIView):
     parser_class = (CustomerOrderProblemPic,)
@@ -112,3 +138,11 @@ class uploadGuaranteeInvoicePic(APIView):
         else:
             print('bye')
             return Response({'response':'upload pics fialed'})
+
+
+class GetTimeRange(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request):
+        tr=OrderTimeRange.objects.all().values()
+        return Response(tr)

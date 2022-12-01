@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-w+&_)fw%wb+c18_&1n63_aeb9%bgc#4@&y&p8z$fs5d$--b42^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','mersa-group.ir']
+
+ALLOWED_HOSTS = ['localhost','mersa-group.ir' ,'127.0.0.1']
 
 
 # cred = credentials.Certificate("./inanloo-firebase-adminsdk-3c4k6-360fb5ac47.json")
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     'configrules',
     'personal',
     'support',
+    'websocket',
+    'channels',
 
     'django.contrib.admindocs'
 
@@ -101,7 +104,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'inanloo_service.wsgi.application'
-
+ASGI_APPLICATION = 'inanloo_service.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 FCM_DJANGO_SETTINGS = {
     # default: _('FCM Django')
     "APP_VERBOSE_NAME": "django_fcm",
@@ -135,8 +146,9 @@ DATABASES = {
 }
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
-'http://localhost:4200',  # for localhost (REACT Default)
-'http://apiis.mersa-group.ir', # for network
+'http://localhost:4200',
+'http://localhost:8000',
+'http://api-is.mersa-group.ir',
 )
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

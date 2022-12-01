@@ -35,5 +35,6 @@ urlpatterns = [
     path('schema/', get_schema_view(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('docs/', include_docs_urls(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('swagger-docs/', get_swagger_view(DOCS_TITLE)),
-    path('admins/doc/', include('django.contrib.admindocs.urls'))
+    path('admins/doc/', include('django.contrib.admindocs.urls')),
+
 ]

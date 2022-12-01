@@ -1,38 +1,5 @@
 from django.contrib import admin
-from baseinfo.models import (
-    Regions,
-    ProvinceGeofence,
-    Provinces,
-    RegionsGeofence,
-    CustomerCategory,
-    TechnicianCategory,
-
-    Devices,
-    HireJson,
-    HireForm,
-    OTPsms,
-    Sms,
-    SmsTypes,
-    MembersGroup,
-    ApplianceCategories,
-    ApplianceBrands,
-    AppliancesSupplier,
-    Appliances,
-    DevicesPrice,
-    Problems,
-    Counties,
-    Cities,
-    CityGeofence,
-    Neighbourhoods,
-    NeighbourhoodGeofence,
-    ApllianceCategoryProblems,
-    BarndsProblems,
-    DevicesGuarantee,
-    DevicesGuaranteeImages,
-    MembersPermission,
-    ProblemsKind,
-
-)
+from baseinfo.models import *
 admin.site.register(AppliancesSupplier)
 admin.site.register(Problems)
 admin.site.register(ApllianceCategoryProblems)
@@ -64,3 +31,7 @@ admin.site.register(OTPsms)
 admin.site.register(Sms)
 admin.site.register(SmsTypes)
 admin.site.register(ProblemsKind)
+
+admin.site.register(AppliancesCategoryCheckList)
+admin.site.register(BrandsChecklist)
+admin.site.register(ModelsChecklist)

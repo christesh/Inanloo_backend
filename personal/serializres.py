@@ -4,7 +4,11 @@ from .models import Supplier,Customers, CompanyMembers, \
 from baseinfo.Serializers import MembersGroupSerializer, CustomerCategory,TechnicianCategory,ProvincesSerializerV2,\
     CountiesSerializerV2,CitiesSerializerV2,RegionsSerializerV2,NabourHoodsSerializer,ProvincesSerializer
 
+class UserUploadSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Customers
+        fields = ['id', 'picture']
 
 class CustomerCategorySerializer (serializers.ModelSerializer):
     class Meta:
@@ -84,7 +88,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     phones = PhonesSerializer(many=True)
     class Meta:
         model = Customers
-        fields = ['id', 'firstName', 'lastName', 'nationalId','birthDate','phones','mobile','address','picture','customerCategory',
+        fields = ['id', 'firstName', 'lastName', 'nationalId','birthDate','picture','phones','mobile','address','picture','customerCategory',
                   'customerDevices']
 
 class CompanyMemberSerializer(serializers.ModelSerializer):
@@ -106,7 +110,7 @@ class TechnicianSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = Technician
-        fields = ['id', 'firstName', 'lastName', 'nationalId', 'phones', 'mobile', 'address', 'technicianCategory',
+        fields = ['id', 'firstName', 'lastName', 'nationalId','picture', 'phones', 'mobile', 'address', 'technicianCategory',
                   'technicianFavourite', 'technicianRank', 'activate','status', 'hireForm']
 
 

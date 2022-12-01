@@ -4,7 +4,6 @@ from django.contrib.auth.models import User, Group
 
 # Create your models here.
 ''' users models'''
-
 class MembersPermission(models.Model):
 
     title=models.CharField(max_length=30)
@@ -29,7 +28,6 @@ class MembersGroup(models.Model):
 
     class Meta:
         verbose_name_plural = 'MembersGroup'
-
 
 
 class CustomerCategory(models.Model):
@@ -60,9 +58,7 @@ class TechnicianCategory(models.Model):
         verbose_name_plural = 'TechnicianCategory'
 
 
-
-
-''' appliences models'''
+''' appliances models'''
 class ApplianceCategories(models.Model):
     """
              در این جدول طبقه بندی مربوط به لوازم خانگی تعریف میشود
@@ -121,7 +117,8 @@ class AppliancesSupplier(models.Model):
     class Meta:
         verbose_name_plural = 'AppliancesSupplier'
 
-''' devisces models'''
+
+''' devices models'''
 class Devices(models.Model):
     """
             در این جدول اطلاعات ثطعات ذخیره میشود
@@ -163,6 +160,7 @@ class DevicesGuaranteeImages(models.Model):
     class Meta:
         verbose_name_plural = 'DevicesGuaranteeImages'
 
+
 class DevicesPrice(models.Model):
     """
     دز این جدول قیمت قطعات ذهیره میشود
@@ -177,6 +175,7 @@ class DevicesPrice(models.Model):
         verbose_name_plural = 'DevicesPrice'
 
 
+''' problems models'''
 class ProblemsKind(models.Model):
     title = models.CharField(max_length=20)
     description = models.TextField(null=True, blank=True)
@@ -188,7 +187,6 @@ class ProblemsKind(models.Model):
         verbose_name_plural = 'ProblemsKind'
 
 
-''' problems models'''
 class ApllianceCategoryProblems(models.Model):
     """
     در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
@@ -205,6 +203,20 @@ class ApllianceCategoryProblems(models.Model):
 
     class Meta:
         verbose_name_plural = 'ApllianceCategoryProblems'
+
+
+class AppliancesCategoryCheckList(models.Model):
+    appliancescategory = models.ForeignKey(ApplianceCategories, related_name='appCatChecklist', on_delete=models.CASCADE,
+                                           help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
+    checklistTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
+    Description = models.TextField(null=True, blank=True,
+                                          help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
+    def __str__(self):
+        return str(self.checklistTitle)
+
+    class Meta:
+        verbose_name_plural = 'ApplianceCategoryCheckList'
+
 
 class BarndsProblems(models.Model):
     """
@@ -225,6 +237,19 @@ class BarndsProblems(models.Model):
         verbose_name_plural = 'BarndsProblems'
 
 
+class BrandsChecklist(models.Model):
+    appliancesBrands = models.ForeignKey(ApplianceBrands, on_delete=models.CASCADE, related_name='brandChecklist',
+                                         help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
+    checklistTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
+    Description = models.TextField(null=True, blank=True,
+                                          help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
+    def __str__(self):
+        return str(self.checklistTitle)
+
+    class Meta:
+        verbose_name_plural = 'BrandsChecklist'
+
+
 class Problems(models.Model):
     """
     در این جدول انواع مشکلات مربوط به هر دستگاه تعریف می شود
@@ -242,6 +267,18 @@ class Problems(models.Model):
     class Meta:
         verbose_name_plural = 'Problems'
 
+
+class ModelsChecklist(models.Model):
+    appliances = models.ForeignKey(Appliances, on_delete=models.CASCADE, related_name='modelChecklist',
+                                   help_text='در این فیلد مشحص میشود مشکل مربوط به کدام یک از لوازم خانگی است')
+    checklistTitle = models.CharField(max_length=20, help_text='در این فیلد عنوان مشکل ذخیره میشود')
+    Description = models.TextField(null=True, blank=True,
+                                          help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
+    def __str__(self):
+        return str(self.checklistTitle)
+
+    class Meta:
+        verbose_name_plural = 'ModelsChecklist'
 
 '''location models'''
 class Provinces(models.Model):
@@ -369,6 +406,7 @@ class NeighbourhoodGeofence(models.Model):
     class Meta:
         verbose_name_plural = 'NeighbourhoodGeofence'
 
+
 ''' hire models'''
 class HireForm(models.Model):
     """
@@ -396,6 +434,7 @@ class HireJson(models.Model):
 
     class Meta:
         verbose_name_plural = 'HireJson'
+
 
 '''sms models'''
 class OTPsms(models.Model):
@@ -447,3 +486,14 @@ class Sms(models.Model):
 
     class Meta:
         verbose_name_plural = 'SmsTypes'
+
+
+class Logs(models.Model):
+    action=models.CharField(max_length=50)
+    actor=models.ForeignKey(User,on_delete=models.CASCADE)
+    actDateTime=models.DateTimeField()
+    def __str__(self):
+        return str(self.action) + '-' + str(self.actor) +'-' + str(self.actor)
+
+    class Meta:
+        verbose_name_plural = 'Logs'

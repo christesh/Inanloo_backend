@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 from django.views import View
 
@@ -118,7 +120,6 @@ class EditApplianceCategoryProblem(APIView):
                                 lowPrice=lowPrice,highPrice=highPrice)
         return Response({'appliancecategoryproblem': 'edited'})
 
-
 class DeleteApplianceCategoryProblem(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -127,6 +128,40 @@ class DeleteApplianceCategoryProblem(APIView):
         print(pId)
         co = ApllianceCategoryProblems.objects.filter(id=pId).delete()
         return Response({'appliancecategoryproblem': 'deleted'})
+
+
+class CreateApplianceCategoryChecklist(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        appliancescategory = self.request.data.get('appliance')
+        checklistTitle = self.request.data.get('title')
+        Description =self.request.data.get('description')
+
+        p = AppliancesCategoryCheckList(appliancescategory_id=appliancescategory,checklistTitle=checklistTitle,
+                                Description=Description,)
+        p.save()
+        return Response({'appliancecategoryChecklist':'created','ID' : p.id})
+
+class EditApplianceCategoryChecklist(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        appId=self.request.data.get('id')
+        checklistTitle = self.request.data.get('title')
+        Description =self.request.data.get('description')
+        co = AppliancesCategoryCheckList.objects.filter(id=appId).update(checklistTitle=checklistTitle,
+                                Description=Description)
+        return Response({'appliancecategoryChecklist': 'edited'})
+
+class DeleteApplianceCategoryChecklist(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        pId=self.request.data.get('id')
+        print(pId)
+        co = AppliancesCategoryCheckList.objects.filter(id=pId).delete()
+        return Response({'appliancecategoryChecklist': 'deleted'})
 
 
 class CreateBrandProblem(APIView):
@@ -140,7 +175,7 @@ class CreateBrandProblem(APIView):
         lowPrice = self.request.data.get('lowprice')
         highPrice =self.request.data.get('highprice')
         p = BarndsProblems(appliancesBrands_id=brand,problemTitle=problemTitle,
-                                problemDescription=problemDescription,problemKind=problemKind,
+                                problemDescription=problemDescription,problemKind_id=problemKind,
                                 lowPrice=lowPrice,highPrice=highPrice)
         p.save()
         return Response({'brandcategoryproblem':'created','ID': p.id})
@@ -156,7 +191,7 @@ class EditBrandProblem(APIView):
         lowPrice = self.request.data.get('lowprice')
         highPrice =self.request.data.get('highprice')
         co = BarndsProblems.objects.filter(id=brandId).update(problemTitle=problemTitle,
-                                problemDescription=problemDescription,problemKind=problemKind,
+                                problemDescription=problemDescription,problemKind_id=problemKind,
                                 lowPrice=lowPrice,highPrice=highPrice)
         return Response({'brandcategoryproblem': 'edited'})
 
@@ -469,3 +504,14 @@ class SendFCM(APIView):
                 print('Push notification failed.', e)
                 return Response({'response':'Push notification failed.'})
         return Response({'response': 'Push notification send'})
+
+class SetLog(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self,request, *args, **kwargs):
+        user=self.request.user
+        action=self.request.data.get('action')
+        dateTime=datetime.datetime.now()
+        _log=Logs(action=action,actor=user,actDateTime=dateTime)
+        _log.save()
+        print('log id:'+str(_log.id))
+        return Response({'result':'log is seted:'+str(_log.id)})

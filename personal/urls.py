@@ -3,7 +3,7 @@ from django.urls import path
 
 urlpatterns = [
     path('sendsms/', SendSms.as_view()),
-    path('register/', Register.as_view()),
+    path('registerper/', RegisterPerson.as_view()),
     path('checksms/', CheckSms.as_view()),
     path('GetPersonCategories/', GetPersonCategories.as_view()),
     path('justsms/', JustSms.as_view()),
@@ -29,4 +29,6 @@ urlpatterns = [
     path('deletecustomeraddress/', DeleteCustomerAddress.as_view()),
     path('changepass/', changepass.as_view()),
     path('ForgetSendSms/', ForgetSendSms.as_view()),
+    path('technicianuploadpic/', TechnicianUploadPic.as_view()),
+    path('customeruploadpic/', CustomerUploadPic.as_view())
 ]

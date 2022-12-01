@@ -1,12 +1,6 @@
 from rest_framework import serializers
 
-from .models import Sms,SmsTypes,OTPsms,NeighbourhoodGeofence,\
-    Neighbourhoods,RegionsGeofence,Regions,CityGeofence,\
-    Cities,ProvinceGeofence,Provinces,Problems,DevicesPrice,\
-    Devices,ApplianceCategories,\
-    TechnicianCategory,CustomerCategory,\
-    MembersGroup,Appliances, AppliancesSupplier,\
-    ApplianceBrands, Counties,MembersPermission,ApllianceCategoryProblems,BarndsProblems
+from .models import *
 
 # from personal.serializres import SupplierSerializer
 class ProblemsSerialzer (serializers.ModelSerializer):
@@ -14,19 +8,30 @@ class ProblemsSerialzer (serializers.ModelSerializer):
         model=Problems
         fields='__all__'
 
+class ModelsChecklistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ModelsChecklist
+        fields='__all__'
+
 class AppliancesSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
     model = serializers.CharField(source='applianceModel')
     description = serializers.CharField(source='applianceDescription')
     modelProblem=ProblemsSerialzer(many=True)
+    modelChecklist = ModelsChecklistSerializer(many=True)
     class Meta:
         model = Appliances
-        fields = ['ID','model','description','modelProblem']
+        fields = ['ID','model','description','modelProblem','modelChecklist']
 
 class BarndsProblemsSerializer(serializers.ModelSerializer):
     class Meta:
         model= BarndsProblems
         fields ='__all__'
+
+class BrandsChecklistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=BrandsChecklist
+        fields= '__all__'
 
 class ApplianceBrandsSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
@@ -35,15 +40,20 @@ class ApplianceBrandsSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='a_brandDescription')
     models = AppliancesSerializer(many=True)
     brandProblem=BarndsProblemsSerializer(many=True)
-
+    brandChecklist=BrandsChecklistSerializer(many=True)
     class Meta:
         model = ApplianceBrands
-        fields = ['ID','brand','brandpic','description','brandProblem','models','a_barndCategory']
+        fields = ['ID','brand','brandpic','description','brandProblem','brandChecklist','models','a_barndCategory']
 
 class ApllianceCategoryProblemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApllianceCategoryProblems
         fields = '__all__'
+
+class ApplianceCategoryChecklistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=AppliancesCategoryCheckList
+        fields='__all__'
 
 class ApplianceCategoriesSerializer(serializers.ModelSerializer):
     ID = serializers.CharField(source='id')
@@ -52,9 +62,10 @@ class ApplianceCategoriesSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='a_categoryDescription')
     brands = ApplianceBrandsSerializer(many=True)
     appCatProblem=ApllianceCategoryProblemsSerializer(many=True)
+    appCatChecklist = ApplianceCategoryChecklistSerializer(many=True)
     class Meta:
         model = ApplianceCategories
-        fields = ['ID','title','pic','description','appCatProblem','brands']
+        fields = ['ID','title','pic','description','appCatProblem','appCatChecklist','brands']
 
 class AppliancesSupplierSerializer(serializers.ModelSerializer):
     # supplier=SupplierSerializer()

@@ -10,8 +10,8 @@ import requests
 import json
 import random
 from baseinfo.models import OTPsms,MembersPermission
-from .models import Person,PersonAuth,Customers, Addresses,Technician,Mobiles,CompanyMembers,MembersGroup
-from .serializres import PersonSerializer,CustomerSerializer,TechnicianSerializer,CompanyMembersSerializer,CompanyMemberSerializer
+from .models import *
+from .serializres import *
 from baseinfo.Serializers import MembersGroupSerializer,MembersPermissionSSerializer
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
@@ -132,9 +132,9 @@ class GetPersonCategories(APIView):
         return Response(p)
 
 
-class Register(APIView):
+class RegisterPerson(APIView):
     permission_classes = (AllowAny,)
-
+    print('r1')
     def post(self, request, *args, **kwargs):
         user = self.request.data.get('username')
         pass1 = user
@@ -144,10 +144,14 @@ class Register(APIView):
         catName=Group.objects.filter(id=usercategory).values('name')
         nid=self.request.data.get('nationalid')
         p = User.objects.filter(username=user)
+        print('r2')
+        print(p)
         if (p.exists()):
+            print('pexist')
             return Response({"key": "username exists"})
         else:
             data1 = {'username': user, 'password1': pass1, 'password2': pass1}
+            print(data1)
             r = requests.post('http://localhost:8000/api/v1/rest-auth/registration/', data=data1)
             rt = r.text.strip()
             d = json.loads(rt)
@@ -263,7 +267,7 @@ class GetAllCustomersDetails(APIView):
 
 class GetAllTechniciansDetails(APIView):
     permission_classes = (IsAuthenticated,)
-
+    # permission_classes = (AllowAny,)
     def get(self, request):
         p = Technician.objects.all()
         serializer = TechnicianSerializer(p, many=True)
@@ -452,3 +456,32 @@ class DeleteCustomerAddress(APIView):
         print(id)
         da=Addresses.objects.filter(id=id).delete()
         return Response({'Address deleted ID': id})
+
+
+class TechnicianUploadPic(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = Technician.objects.get(id=self.request.data.get('id'))
+            profilePic = request.FILES["profilePic"]
+            print(profilePic)
+            user.picture = profilePic
+            user.save()
+            return Response({'response':'upload pics success'})
+        except:
+            return Response({'response': 'upload pics failed'})
+
+class CustomerUploadPic(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = Customers.objects.get(id=self.request.data.get('id'))
+            profilePic = request.FILES["profilePic"]
+            print(profilePic)
+            user.picture = profilePic
+            user.save()
+            return Response({'response':'upload pics success'})
+        except:
+            return Response({'response': 'upload pics failed'})
