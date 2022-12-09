@@ -3,7 +3,7 @@ from django.urls import path
 
 urlpatterns = [
     path('sendsms/', SendSms.as_view()),
-    path('registerper/', RegisterPerson.as_view()),
+    path('register/', Register.as_view()),
     path('checksms/', CheckSms.as_view()),
     path('GetPersonCategories/', GetPersonCategories.as_view()),
     path('justsms/', JustSms.as_view()),
@@ -30,5 +30,19 @@ urlpatterns = [
     path('changepass/', changepass.as_view()),
     path('ForgetSendSms/', ForgetSendSms.as_view()),
     path('technicianuploadpic/', TechnicianUploadPic.as_view()),
-    path('customeruploadpic/', CustomerUploadPic.as_view())
+    path('customeruploadpic/', CustomerUploadPic.as_view()),
+    path('createtechnicianskills/', CreateTechnicianSkills.as_view()),
+    path('deletetechnicianskill/', DeleteTechnicianSkill.as_view()),
+    path('createtechniciandistricts/', CreateTechnicianDistricts.as_view()),
+    path('deletetechniciandistrict/', DeleteTechnicianDistrict.as_view()),
+    path('gettechniciandistricts/', GetTechnicianDistricts.as_view()),
+    path('gettechnicianskills/', GetTechnicianSkills.as_view()),
+    path('editprofile/', EditProfile.as_view()),
+    path('saveusersmobile/', SaveUsersMobile.as_view()),
+    path('saveuserstel/', SaveUsersTel.as_view()),
+    path('edittechnicianfav/', EditTechnicianFav.as_view()),
+    path('edittechnicianrank/', EditTechnicianRank.as_view()),
+    path('edittechnicianactivation/', EditTechnicianActivation.as_view()),
+    path('edittechnicianstatus/', EditTechnicianStatus.as_view()),
+    path('setfillprofileture/', SetFillProfileTure.as_view())
 ]

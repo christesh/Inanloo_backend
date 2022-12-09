@@ -70,12 +70,13 @@ class Technician(Person):
     class Meta:
         verbose_name_plural = 'Technician'
 
+
 class TechnicianSkills(models.Model):
     """
           در این جدول مهارتهای مربوط به تکنسین ها تعریف میشود
     """
     techneician=models.ForeignKey(Technician,on_delete=models.CASCADE)
-    technicianBrand = models.ManyToManyField(ApplianceBrands, null=True, blank=True,
+    technicianBrand = models.ForeignKey(ApplianceBrands,on_delete=models.CASCADE, null=True, blank=True,
                                              help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
     installation=models.BooleanField()
     fix=models.BooleanField()
@@ -85,6 +86,26 @@ class TechnicianSkills(models.Model):
 
     class Meta:
         verbose_name_plural = 'TechnicianSkills'
+
+
+class TechnicianDistricts(models.Model):
+    techneician=models.ForeignKey(Technician,on_delete=models.CASCADE)
+    province = models.ForeignKey(Provinces, on_delete=models.CASCADE, null=True, blank=True,
+                                 help_text=' در این فیلد مشخص آدرس مربوط به چه استانی است')
+    county = models.ForeignKey(Counties, on_delete=models.CASCADE, null=True, blank=True,
+                               help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
+
+    city = models.ForeignKey(Cities, on_delete=models.CASCADE, null=True, blank=True,
+                             help_text=' در این فیلد مشخص آدرس مربوط به چه شهرستانی است')
+    region = models.ForeignKey(Regions, on_delete=models.CASCADE, null=True, blank=True,
+                               help_text=' در این فیلد مشخص آدرس مربوط به چه منطقه ای است')
+    neighbourhood = models.ForeignKey(Neighbourhoods, on_delete=models.CASCADE, null=True, blank=True,
+                                      help_text=' در این فیلد مشخص آدرس مربوط به چه محله ای است')
+    def __str__(self):
+        return str(self.techneician)
+
+    class Meta:
+        verbose_name_plural = 'TechnicianDistricts'
 
 
 class CompanyMembers(Person):

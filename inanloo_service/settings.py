@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'personal',
     'support',
     'websocket',
-    'channels',
+    # 'channels',
 
     'django.contrib.admindocs'
 
@@ -104,15 +104,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'inanloo_service.wsgi.application'
-ASGI_APPLICATION = 'inanloo_service.asgi.application'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('localhost', 6379)],
-        },
-    },
-}
+# ASGI_APPLICATION = 'inanloo_service.asgi.application'
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('localhost', 6379)],
+#         },
+#     },
+# }
 FCM_DJANGO_SETTINGS = {
     # default: _('FCM Django')
     "APP_VERBOSE_NAME": "django_fcm",
@@ -147,7 +147,6 @@ DATABASES = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
 'http://localhost:4200',
-'http://localhost:8000',
 'http://api-is.mersa-group.ir',
 )
 # Password validation

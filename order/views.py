@@ -34,7 +34,7 @@ class CreateOrder (APIView):
         customer =Customers.objects.get(id=order['customerID'])
         registerBy =User.objects.get(id=order['registerID'])
         registerDateTime=datetime.now()
-        problemPics = dict((request.data).lists())['problemPic']
+        problemPics = order['problemPics']
         brand =ApplianceBrands.objects.get(id=order['brandID'])
         od=order['orderDate'].split('/')
         orderDate =jdatetime.date(int(od[0]),int(od[1]),int(od[2])).togregorian()
@@ -68,7 +68,7 @@ class CreateOrder (APIView):
             else:
                 flag = 0
 
-        return Response({'result':'order id:'+orderobj.id})
+        return Response({'result':'order id:'+str(orderobj.id)})
 
 def modify_input_for_multiple_files(property_id, image):
     dict = {}

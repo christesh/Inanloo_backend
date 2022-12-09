@@ -15,6 +15,8 @@ from .serializres import *
 from baseinfo.Serializers import MembersGroupSerializer,MembersPermissionSSerializer
 from django.db.models import Q
 from rest_framework.authtoken.models import Token
+from django.db.models import F
+import jdatetime
 
 # Create your views here.
 class JustSms(APIView):
@@ -67,6 +69,7 @@ class SendSms(APIView):
         else:
             return Response({"result": "mobile number not match"})
 
+
 class changepass(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self,request,*args, **kwargs):
@@ -76,6 +79,7 @@ class changepass(APIView):
         u.set_password(passw)
         u.save()
         return Response({"result":"password change"})
+
 
 class ForgetSendSms(APIView):
     permission_classes = (AllowAny,)
@@ -105,6 +109,7 @@ class ForgetSendSms(APIView):
         else:
             return Response({"result": "mobile number not match"})
 
+
 class CheckSms(APIView):
     permission_classes = (AllowAny,)
     def post(self, request, *args, **kwargs):
@@ -132,7 +137,7 @@ class GetPersonCategories(APIView):
         return Response(p)
 
 
-class RegisterPerson(APIView):
+class Register(APIView):
     permission_classes = (AllowAny,)
     print('r1')
     def post(self, request, *args, **kwargs):
@@ -462,18 +467,18 @@ class TechnicianUploadPic(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        try:
+        # try:
             user = Technician.objects.get(id=self.request.data.get('id'))
             profilePic = request.FILES["profilePic"]
             print(profilePic)
             user.picture = profilePic
             user.save()
             return Response({'response':'upload pics success'})
-        except:
-            return Response({'response': 'upload pics failed'})
+        # except:
+        #     return Response({'response': 'upload pics failed'})
 
 class CustomerUploadPic(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         try:
@@ -485,3 +490,213 @@ class CustomerUploadPic(APIView):
             return Response({'response':'upload pics success'})
         except:
             return Response({'response': 'upload pics failed'})
+
+
+class GetTechnicianSkills(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        techid = self.request.data.get('techid')
+        skills=TechnicianSkills.objects.filter(techneician_id=techid).values('id','techneician_id','installation','fix',brandID=F('technicianBrand_id'),
+                                                                             brandName=F('technicianBrand__a_brandName'),applianceID=F('technicianBrand__a_barndCategory_id'),
+                                                                             applianceName=F('technicianBrand__a_barndCategory_id__a_categoryName'),
+                                                                             )
+        return Response(skills)
+
+
+class CreateTechnicianSkills(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        skills=self.request.data.get('skills')
+        techid=self.request.data.get('techid')
+        ccnt=0
+        ucnt=0
+        for skill in skills:
+            brand=ApplianceBrands.objects.get(id=skill['brandid'])
+            skillexist=TechnicianSkills.objects.filter(Q(techneician_id=techid),Q(technicianBrand=brand))
+            install = skill['setup']
+            fix = skill['fix']
+            if(skillexist.exists()):
+                if skillexist[0].installation!=install or skillexist[0].fix!=fix:
+                    su=skillexist.update(installation=install,fix=fix)
+                    ucnt=ucnt+1
+            else:
+                try:
+                    techSkill=TechnicianSkills(techneician_id=techid,technicianBrand=brand,installation=install,fix=fix)
+                    techSkill.save()
+                    ccnt=ccnt+1
+                except:
+                    print("nashod")
+        return Response ({'result':{'create':str(ccnt),'update':str(ucnt)}})
+
+
+class DeleteTechnicianSkill(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        techSkillsId = self.request.data.get('skillsid')
+        print(techSkillsId)
+        ee=TechnicianSkills.objects.filter(id=techSkillsId).values()
+        print(ee)
+        dts=TechnicianSkills.objects.filter(id=techSkillsId).delete()
+        return Response({'result':'one skill was deleted'})
+
+
+class GetTechnicianDistricts(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        techid = self.request.data.get('techid')
+        districts=TechnicianDistricts.objects.filter(techneician_id=techid).values('id',provinceID=F('province_id'),provinceName=F('province__provinceName'),
+                                                                                   countyID=F('county_id'), countyName=F('county__countyName'),
+                                                                                   cityID=F('city_id'), cityName=F('city__cityName'),
+                                                                                   regionID=F('region_id'), regionName=F('region__regionName'),
+                                                                                   neighbourhoodID=F('neighbourhood_id'), neighbourhoodName=F('neighbourhood__neighbourhoodName'))
+        return Response(districts)
+
+
+class CreateTechnicianDistricts(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        districts=self.request.data.get('districts')
+        techid=self.request.data.get('techid')
+        ccnt=0
+        for district in districts:
+            province = Provinces.objects.get(id=district['provinceid'])
+            county = Counties.objects.get(id=district['countyid'])
+            city = Cities.objects.get(id=district['cityid'])
+            region = Regions.objects.get(id=district['regionid'])
+            neighbourhood = Neighbourhoods.objects.get(id=district['neighbourhoodid'])
+            districtexist=TechnicianDistricts.objects.filter(Q(techneician_id=techid),Q(province=province),Q(county=county),Q(city=city),Q(region=region),Q(neighbourhood=neighbourhood))
+            if(districtexist.exists()):
+                pass
+            else:
+                try:
+                    techDistr=TechnicianDistricts(techneician_id=techid,province=province,county=county,city=city,region=region,neighbourhood=neighbourhood)
+                    techDistr.save()
+                    ccnt=ccnt+1
+                except:
+                    print("nashod")
+        return Response({'result':{'create':str(ccnt)}})
+
+
+class DeleteTechnicianDistrict(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        techDisterictId = self.request.data.get('districtsid')
+        dts=TechnicianDistricts.objects.filter(id=techDisterictId).delete()
+        return Response({'result':'one district was deleted'})
+
+class EditProfile(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid=self.request.data.get('uid')
+        fname = self.request.data.get('fname')
+        lname=self.request.data.get('lname')
+        nid=self.request.data.get('nid')
+        bdate = self.request.data.get('bdate')
+        od = bdate.split('/')
+        birthDate = jdatetime.date(int(od[0]), int(od[1]), int(od[2])).togregorian()
+        user=Person.objects.filter(id=uid)
+        user.update(firstName=fname,lastName=lname,nationalId=nid,birthDate=birthDate)
+        return Response({'result':'one user was updated'})
+
+class SaveUsersMobile(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid=self.request.data.get('uid')
+        p=Person.objects.get(id=uid)
+        mobiles=self.request.data.get('mobiles')
+        print(mobiles)
+        mcnt=0
+        for mobile in mobiles:
+            mobileExists=Mobiles.objects.filter(Q(person_id=uid),Q(mobileNumber=mobile))
+            if mobileExists.exists():
+                pass
+            else:
+                newMobile=Mobiles(person=p,mobileNumber=mobile,isMain=False)
+                newMobile.save()
+                mcnt=mcnt+1
+        return Response({'result':str(mcnt) + ' mobile(s) is(are) Saved for user:'+ p.firstName +' '+p.lastName})
+
+class SaveUsersTel(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid=self.request.data.get('uid')
+        p=Person.objects.get(id=uid)
+        tels=self.request.data.get('tels')
+        print(tels)
+        mcnt=0
+        for tel in tels:
+            telExists=Phones.objects.filter(Q(person_id=uid),Q(phoneNumber=tel))
+            if telExists.exists():
+                pass
+            else:
+                newTel=Phones(person=p,phoneNumber=tel,isMain=False)
+                newTel.save()
+                mcnt=mcnt+1
+        return Response({'result':str(mcnt) + ' tel(s) is(are) Saved for user:'+ p.firstName +' '+p.lastName})
+
+class EditTechnicianFav(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        techFav=self.request.data.get('fav')
+        tech=Technician.objects.get(id=uid)
+        tech.technicianFavourite=techFav
+        print(tech.technicianFavourite)
+        tech.save()
+        print(tech.technicianFavourite)
+        return Response({'result':'tech fav saved'})
+
+class EditTechnicianRank(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        techRank=self.request.data.get('rank')
+        tech=Technician.objects.get(id=uid)
+        tech.technicianRank=techRank
+        tech.save()
+        return Response({'result':'tech rank saved'})
+
+
+class EditTechnicianActivation(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        techAct = self.request.data.get('active')
+        tech = Technician.objects.get(id=uid)
+        tech.activate = techAct
+        tech.save()
+        return Response({'result': 'tech activation saved'})
+
+
+class EditTechnicianStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        techStatus = self.request.data.get('Status')
+        tech = Technician.objects.get(id=uid)
+        tech.status = techStatus
+        tech.save()
+        return Response({'result': 'tech status saved'})
+
+class SetFillProfileTure(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        p=PersonAuth.objects.get(user_id=uid)
+        p.fillProfile=True
+        p.save()
+        return Response({'result':'user:'+ str(uid) + 'profile was filled '})

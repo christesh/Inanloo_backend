@@ -1,5 +1,7 @@
 from django.contrib import admin
 from baseinfo.models import *
+from fcm_django.models import FCMDevice
+
 admin.site.register(AppliancesSupplier)
 admin.site.register(Problems)
 admin.site.register(ApllianceCategoryProblems)

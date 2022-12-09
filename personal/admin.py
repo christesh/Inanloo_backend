@@ -8,8 +8,12 @@ from personal.models import (
     Addresses,
     PersonAuth,
     Supplier,
+    TechnicianSkills,
+    TechnicianDistricts
     # Person
 )
+admin.site.register(TechnicianSkills)
+admin.site.register(TechnicianDistricts)
 admin.site.register(CompanyMembers)
 admin.site.register(Supplier)
 admin.site.register(Mobiles)

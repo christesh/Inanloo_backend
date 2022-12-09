@@ -110,7 +110,7 @@ class TechnicianSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = Technician
-        fields = ['id', 'firstName', 'lastName', 'nationalId','picture', 'phones', 'mobile', 'address', 'technicianCategory',
+        fields = ['id', 'firstName', 'lastName', 'nationalId','picture', 'phones', 'mobile','technicianFavourite', 'address','birthDate', 'technicianCategory',
                   'technicianFavourite', 'technicianRank', 'activate','status', 'hireForm']
 
 

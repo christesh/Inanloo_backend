@@ -315,7 +315,11 @@ class Counties(models.Model):
                                  help_text='در این فیلد مشخص میشود شهرستان مربوط به کدام استان است')
     countyName=models.CharField(max_length=50, null=False, blank=False,
                                     help_text='در این فیلد نام شهرستان ذحیره می شود')
+    def __str__(self):
+        return str(self.countyName)
 
+    class Meta:
+        verbose_name_plural = 'Counties'
 
 class Cities(models.Model):
     """
