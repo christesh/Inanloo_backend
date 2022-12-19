@@ -700,3 +700,13 @@ class SetFillProfileTure(APIView):
         p.fillProfile=True
         p.save()
         return Response({'result':'user:'+ str(uid) + 'profile was filled '})
+
+class SetFillProfileFalse(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        uid = self.request.data.get('uid')
+        p=PersonAuth.objects.get(user_id=uid)
+        p.fillProfile=False
+        p.save()
+        return Response({'result':'user:'+ str(uid) + 'profile are not full '})

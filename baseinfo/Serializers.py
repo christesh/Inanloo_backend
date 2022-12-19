@@ -133,6 +133,7 @@ class CountiesSerializer (serializers.ModelSerializer):
 
 class ProvincesSerializer (serializers.ModelSerializer):
     counties=CountiesSerializer(many=True)
+
     class Meta:
         model = Provinces
         fields = ['id','provinceName','counties']

@@ -72,20 +72,42 @@ class getProblems(APIView):
         print(modelID)
         catPromble = ApllianceCategoryProblems.objects.filter(appliancescategory_id=categoryID).values('id','problemTitle',
                                                                                                        'problemDescription',
-                                                                                                       'problemKind',
+                                                                                                       'problemKind_id',
+                                                                                                       'problemKind__title',
                                                                                                        'lowPrice',
                                                                                                        'highPrice')
         brandPromble = BarndsProblems.objects.filter(appliancesBrands_id=barndID).values('id','problemTitle',
                                                                                                        'problemDescription',
-                                                                                                       'problemKind',
+                                                                                                       'problemKind_id',
+                                                                                                       'problemKind__title',
                                                                                                        'lowPrice',
                                                                                                         'highPrice')
         ModelPromble = Problems.objects.filter(appliances_id=modelID).values('id','problemTitle',
                                                                                                        'problemDescription',
-                                                                                                       'problemKind',
+                                                                                                       'problemKind_id',
+                                                                                                       'problemKind__title',
                                                                                                        'lowPrice',
                                                                                                        'highPrice')
-        qs = catPromble.union(brandPromble, ModelPromble)
+
+        # cp=json.dump(catPromble)
+        # bp=json.dump(brandPromble)
+        # mp=json.dump(ModelPromble)
+        qs=[]
+        for item in catPromble:
+            item['pkind']='category'
+            qs.append(item)
+        for item in brandPromble:
+            item['pkind']='brand'
+            qs.append(item)
+        for item in ModelPromble:
+            item['pkind'] = 'model'
+            qs.append(item)
+
+        # qs = catPromble.union(brandPromble, ModelPromble)
+        print(catPromble)
+        print(brandPromble)
+        print(ModelPromble)
+        print(qs)
         return Response(qs)
 
 
@@ -125,7 +147,6 @@ class DeleteApplianceCategoryProblem(APIView):
 
     def post(self, request, *args, **kwargs):
         pId=self.request.data.get('id')
-        print(pId)
         co = ApllianceCategoryProblems.objects.filter(id=pId).delete()
         return Response({'appliancecategoryproblem': 'deleted'})
 
@@ -476,13 +497,14 @@ class CreateFCMDevice(APIView):
 
 
 class SendFCM(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         users= request.POST.get('users')
         title = request.POST.get('title')
         content = request.POST.get('content')
         push = request.POST.get('push')
+        data=request.POST.get('data')
 
         if push:
             message = Message(
@@ -498,11 +520,13 @@ class SendFCM(APIView):
             )
 
             try:
+                print('devices')
                 devices = FCMDevice.objects.get(user_id=users)
+                print(devices)
                 devices.send_message(message)
             except Exception as e:
                 print('Push notification failed.', e)
-                return Response({'response':'Push notification failed.'})
+                return Response({'response':'Push notification failed.' + str(e)})
         return Response({'response': 'Push notification send'})
 
 class SetLog(APIView):
@@ -515,3 +539,4 @@ class SetLog(APIView):
         _log.save()
         print('log id:'+str(_log.id))
         return Response({'result':'log is seted:'+str(_log.id)})
+

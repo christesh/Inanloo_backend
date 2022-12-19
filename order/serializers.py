@@ -38,21 +38,48 @@ class CustomerOrderApplianceInvoice(serializers.ModelSerializer):
         model=CustomerApplianceInvoice
         fields='__all__'
 
+class CustomerProblemPicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CustomerProblemPic
+        fields='__all__'
+
+class CPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= CustomerProblems
+        fields= '__all__'
+
+class ApplianceCategorieSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= ApplianceCategories
+        fields= '__all__'
+
+
+class OrderApplianceBrandSerializer(serializers.ModelSerializer):
+    a_barndCategory=ApplianceCategorieSimpleSerializer(read_only=True)
+    class Meta:
+        model=ApplianceBrands
+        fields="__all__"
+
 
 class OrderSerializer(serializers.ModelSerializer):
-    customer = CustomersSerializer( read_only=True)
-    applianceBrand = ApplianceBrandsSerializer(read_only=True)
+    customer = CustomerSerializer( read_only=True)
+    applianceBrand = OrderApplianceBrandSerializer(read_only=True)
     # device = DevicesSerializer(many=True,read_only=True)
     orderKind = KindOfOrderSerializer(read_only=True)
     orderTimeRange = OrderTimeRangeSerializer(read_only=True)
-    orderAddress = AddressesSerializer(read_only=True)
+    # orderAddress = AddressesSerializer(read_only=True)
     orderStatus = OrderStatusSerializer(read_only=True)
     technician = TechnicianSerializer(read_only=True)
+    orderAddress = AddressesSerializerV2( read_only=True)
+    # customerProblems=CPSerializer(many=True)
     # registerBy=User(read_only=True)
     class Meta:
         model = Order
-        # fields = ['customer','appliance','orderKind','orderTimeRange','orderAddress','orderAddress']
+        # fields = ['customer','technician','orderStatus','applianceBrand','orderKind','orderTimeRange','orderAddress','orderAddress','customerProblems']
         fields= '__all__'
+
+
+
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     order = OrderSerializer()

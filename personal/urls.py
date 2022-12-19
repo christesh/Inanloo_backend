@@ -44,5 +44,7 @@ urlpatterns = [
     path('edittechnicianrank/', EditTechnicianRank.as_view()),
     path('edittechnicianactivation/', EditTechnicianActivation.as_view()),
     path('edittechnicianstatus/', EditTechnicianStatus.as_view()),
-    path('setfillprofileture/', SetFillProfileTure.as_view())
+    path('setfillprofileture/', SetFillProfileTure.as_view()),
+    path('setfillprofilefalse/', SetFillProfileFalse.as_view()),
+
 ]

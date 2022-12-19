@@ -96,6 +96,7 @@ class CustomerProblems (models.Model):
     """
     order = models.ForeignKey(Order,null=True,blank=True, on_delete=models.CASCADE,
                               help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
+
     categoryProblem = models.ForeignKey(ApllianceCategoryProblems, null=True, blank=True, on_delete=models.CASCADE,
                                 help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
     brandproblem = models.ForeignKey(BarndsProblems, null=True, blank=True, on_delete=models.CASCADE,

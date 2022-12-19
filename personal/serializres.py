@@ -27,7 +27,7 @@ class CustomersSerializer (serializers.ModelSerializer):
 class TechnicianCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = TechnicianCategory
-        fields = '__all__'
+        fields = ['id', 'technicianCategory']
 
 
 
@@ -107,10 +107,11 @@ class TechnicianSerializer (serializers.ModelSerializer):
     address = AddressesSerializerV2(many=True)
     mobile = MobilesSerializer(many=True)
     phones = PhonesSerializer(many=True)
-
+    techCat=serializers.CharField(source='technicianCategory.technicianCategory', read_only=True)
+    techCat_id = serializers.CharField(source='technicianCategory.id', read_only=True)
     class Meta:
         model = Technician
-        fields = ['id', 'firstName', 'lastName', 'nationalId','picture', 'phones', 'mobile','technicianFavourite', 'address','birthDate', 'technicianCategory',
+        fields = ['id', 'firstName', 'lastName', 'nationalId','picture', 'phones', 'mobile','technicianFavourite', 'address','birthDate', 'techCat','techCat_id',
                   'technicianFavourite', 'technicianRank', 'activate','status', 'hireForm']
 
 

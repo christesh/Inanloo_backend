@@ -11,6 +11,13 @@ urlpatterns = [
     path('createcustomerappliance/', CreateCustomerAppliance.as_view()),
     path('uploaduaranteeinvoicepic/', uploadGuaranteeInvoicePic.as_view()),
     path('getcustomerorders/', GetCustomerOrders.as_view()),
-    path('sendnotif/', sendnotif.as_view()),
-    path('gettimerange/', GetTimeRange.as_view())
+
+    path('gettimerange/', GetTimeRange.as_view()),
+    path('getallorders/', GetAllOrders.as_view()),
+    path('getuserstatusorders/', GetUserStatusOrders.as_view()),
+    path('getalluserorders/', GetAllUserOrders.as_view()),
+    path('getalltechorders/', GetAllTechOrders.as_view()),
+    path('gettechstatusorders/', GetTechStatusOrders.as_view()),
+    path('gettechopenorders/', GetTechOpenOrders.as_view()),
+    path('sendordertotechnician/',SendOrderToTechnician.as_view()),
 ]

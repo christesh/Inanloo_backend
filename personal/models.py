@@ -46,7 +46,7 @@ class Technician(Person):
        در این جدول اطلاعات تکنسین ها ذخیره میشود
        این جدول از جدول Person ارث بری میکند و علاوه بر اطلاعات آن اطلاعات دیگری صرفا هم برای تکنسین ها ذخیره میکند
        """
-    technicianCategory = models.ForeignKey(TechnicianCategory,null=True,blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع تکنسین از جدول TechnicianCategory ذخیره میشود')
+    technicianCategory = models.ForeignKey(TechnicianCategory,related_name='techCat',null=True,blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع تکنسین از جدول TechnicianCategory ذخیره میشود')
     # technicianApplianceCategory= models.ManyToManyField(ApplianceCategories,null=True,blank=True,help_text=' در این فیلد مهارت های تکنسین از جدول TechnicianSkills ذخیره میشود')
     # technicianSkill=models.ManyToManyField(TechnicianSkills,null=True,blank=True,help_text=' در این فیلد لوازم خانگی تخصصی تکنسین از جدول Devices ذخیره میشود')
     technicianFavourite = models.TextField(null=True,blank=True,
