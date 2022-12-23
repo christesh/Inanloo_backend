@@ -88,8 +88,9 @@ class CustomerSerializer(serializers.ModelSerializer):
     phones = PhonesSerializer(many=True)
     class Meta:
         model = Customers
-        fields = ['id', 'firstName', 'lastName', 'nationalId','birthDate','picture','phones','mobile','address','picture','customerCategory',
+        fields = ['id', 'firstName', 'lastName', 'nationalId','birthDate','picture','phones','mobile','address','customerCategory',
                   'customerDevices']
+        # fields="__all__"
 
 class CompanyMemberSerializer(serializers.ModelSerializer):
     # person=PersonSerializer(many=True)

@@ -184,3 +184,8 @@ class SmsSerializer (serializers.ModelSerializer):
     class Meta:
         model = Sms
         fields = '__all__'
+
+class testSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=testModel
+        fields= "__all__"

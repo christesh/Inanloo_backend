@@ -71,6 +71,7 @@ class OrderSerializer(serializers.ModelSerializer):
     orderStatus = OrderStatusSerializer(read_only=True)
     technician = TechnicianSerializer(read_only=True)
     orderAddress = AddressesSerializerV2( read_only=True)
+    applianceModel=AppliancesSerializer(read_only=True)
     # customerProblems=CPSerializer(many=True)
     # registerBy=User(read_only=True)
     class Meta:
@@ -100,7 +101,7 @@ class CustomerProblemsSerializer(serializers.ModelSerializer):
 
 
 class CustomerProblemPicSerializer(serializers.ModelSerializer):
-    order = OrderSerializer()
+
 
     class Meta:
         model = CustomerProblemPic
@@ -108,7 +109,7 @@ class CustomerProblemPicSerializer(serializers.ModelSerializer):
 
 
 class TechnicianProblemsSerializer(serializers.ModelSerializer):
-    order = OrderSerializer()
+
     problem = ProblemsSerializer()
 
     class Meta:
@@ -117,10 +118,12 @@ class TechnicianProblemsSerializer(serializers.ModelSerializer):
 
 
 class TechnicianProblemPicSerializer(serializers.ModelSerializer):
-    order = OrderSerializer()
+
 
     class Meta:
         model = TechnicianProblemPic
         fields = '__all__'
+
+
 
 

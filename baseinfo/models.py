@@ -10,7 +10,7 @@ class MembersPermission(models.Model):
     active=models.BooleanField()
     description=models.TextField(null=True,blank=True)
     def __str__ (self):
-        return str(self.title)
+        return str(self.id)+"=> "+str(self.title)
 
     class Meta:
         verbose_name_plural = 'MembersPermission'
@@ -24,7 +24,7 @@ class MembersGroup(models.Model):
     description=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به گروه ها ذخیره می شود')
     permissions=models.ManyToManyField(MembersPermission,null=True,blank=True)
     def __str__ (self):
-        return str(self.group)
+        return str(self.id)+"=> "+str(self.group)
 
     class Meta:
         verbose_name_plural = 'MembersGroup'
@@ -38,7 +38,7 @@ class CustomerCategory(models.Model):
     categoryDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به طبقه ها ذخیره می شود')
 
     def __str__(self):
-        return str(self.customerCategory)
+        return str(self.id)+"=> "+str(self.customerCategory)
 
     class Meta:
         verbose_name_plural = 'CustomerCategory'
@@ -52,7 +52,7 @@ class TechnicianCategory(models.Model):
     technicianDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به طبقه ها ذخیره می شود')
 
     def __str__(self):
-        return str(self.technicianCategory)
+        return str(self.id)+"=> "+str(self.technicianCategory)
 
     class Meta:
         verbose_name_plural = 'TechnicianCategory'
@@ -67,7 +67,7 @@ class ApplianceCategories(models.Model):
     a_categoryDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به لوازم خانگی ذخیره می شود')
     a_categoryImage=models.ImageField(null=True,blank=True,upload_to='images/ApplianceCategories/')
     def __str__(self):
-        return str(self.a_categoryName)
+        return str(self.id)+"=> "+str(self.a_categoryName)
 
     class Meta:
         verbose_name_plural = 'ApplianceCategories'
@@ -82,7 +82,7 @@ class ApplianceBrands(models.Model):
     a_brandDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به هر برند ذخیره می شود')
     a_brandImage = models.ImageField(null=True,blank=True,upload_to='images/ApplianceBrands/')
     def __str__(self):
-        return str(self.a_brandName)
+        return str(self.id)+"=> "+str(self.a_brandName)
 
     class Meta:
         verbose_name_plural = 'ApplianceBrands'
@@ -98,7 +98,7 @@ class Appliances(models.Model):
     applianceRate=models.FloatField(null=True,blank=True,help_text='در این فیلد برای مدل ها رنج ارزشی مالی ذخیره می شود')
     applianceImage = models.ImageField(null=True,blank=True,upload_to='images/Appliances/')
     def __str__(self):
-        return str(self.applianceBrand) + '-' + str(self.applianceModel)
+        return str(self.id)+"=> "+str(self.applianceBrand) + '-' + str(self.applianceModel)
 
     class Meta:
         verbose_name_plural = 'Appliances'
@@ -112,7 +112,7 @@ class AppliancesSupplier(models.Model):
     appliance = models.ForeignKey(Appliances, on_delete=models.CASCADE,help_text='در این فیلد نام دستگاه ذخیره میشود')
 
     def __str__(self):
-        return str(self.appliance) + '-' + str(self.supplier)
+        return str(self.id)+"=> "+str(self.appliance) + '-' + str(self.supplier)
 
     class Meta:
         verbose_name_plural = 'AppliancesSupplier'
@@ -130,7 +130,7 @@ class Devices(models.Model):
     deviceImage = models.ImageField(upload_to='images/Devices/')
 
     def __str__(self):
-        return str(self.appliance) + '-' + str(self.applianceSerial)
+        return str(self.id)+"=> "+str(self.appliance) + '-' + str(self.applianceSerial)
 
     class Meta:
         verbose_name_plural = 'Devices'
@@ -144,7 +144,7 @@ class DevicesGuarantee(models.Model):
     isValid=models.BooleanField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.device) + '-' + str(self.devicePrice) + '-' + str(self.createdDate)
+        return str(self.id)+"=> "+str(self.device) + '-' + str(self.devicePrice) + '-' + str(self.createdDate)
 
     class Meta:
         verbose_name_plural = 'DevicesGuarantee'
@@ -155,7 +155,7 @@ class DevicesGuaranteeImages(models.Model):
     image=models.ImageField(upload_to='images/Devices/Guarantee')
 
     def __str__(self):
-        return str(self.guarantee)
+        return str(self.id)+"=> "+str(self.guarantee)
 
     class Meta:
         verbose_name_plural = 'DevicesGuaranteeImages'
@@ -169,7 +169,7 @@ class DevicesPrice(models.Model):
     devicePrice = models.BigIntegerField(help_text='در این فیلد قیمت قطعه ذحیره می شود')
     createdDate=models.DateTimeField(help_text='در این فیلد تاریخ ثبت قیمت قطعه ذحیره می شود')
     def __str__(self):
-        return str(self.device) + '-' + str(self.devicePrice) + '-' + str(self.createdDate)
+        return str(self.id)+"=> "+str(self.device) + '-' + str(self.devicePrice) + '-' + str(self.createdDate)
 
     class Meta:
         verbose_name_plural = 'DevicesPrice'
@@ -181,7 +181,7 @@ class ProblemsKind(models.Model):
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.title)
+        return str(self.id)+"=> "+str(self.title)
 
     class Meta:
         verbose_name_plural = 'ProblemsKind'
@@ -199,7 +199,7 @@ class ApllianceCategoryProblems(models.Model):
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.problemTitle)
+        return str(self.id)+"=> "+str(self.problemTitle)
 
     class Meta:
         verbose_name_plural = 'ApllianceCategoryProblems'
@@ -212,7 +212,7 @@ class AppliancesCategoryCheckList(models.Model):
     Description = models.TextField(null=True, blank=True,
                                           help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.checklistTitle)
+        return str(self.id)+"=> "+str(self.checklistTitle)
 
     class Meta:
         verbose_name_plural = 'ApplianceCategoryCheckList'
@@ -231,7 +231,7 @@ class BarndsProblems(models.Model):
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.problemTitle)
+        return str(self.id)+"=> "+str(self.problemTitle)
 
     class Meta:
         verbose_name_plural = 'BarndsProblems'
@@ -244,7 +244,7 @@ class BrandsChecklist(models.Model):
     Description = models.TextField(null=True, blank=True,
                                           help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.checklistTitle)
+        return str(self.id)+"=> "+str(self.checklistTitle)
 
     class Meta:
         verbose_name_plural = 'BrandsChecklist'
@@ -262,7 +262,7 @@ class Problems(models.Model):
     lowPrice=models.CharField(null=True,blank=True,max_length=20,help_text='در این فیلد حداقل هزینه مشکل ذخیره می شود')
     highPrice = models.CharField(null=True,blank=True,max_length=20, help_text='در این فیلد حداکثر هزینه مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.problemTitle)
+        return str(self.id)+"=> "+str(self.problemTitle)
 
     class Meta:
         verbose_name_plural = 'Problems'
@@ -275,7 +275,7 @@ class ModelsChecklist(models.Model):
     Description = models.TextField(null=True, blank=True,
                                           help_text='در این فیلد توضیحات مربوط به مشکل ذخیره می شود')
     def __str__(self):
-        return str(self.checklistTitle)
+        return str(self.id)+"=> "+str(self.checklistTitle)
 
     class Meta:
         verbose_name_plural = 'ModelsChecklist'
@@ -288,7 +288,7 @@ class Provinces(models.Model):
     provinceName = models.CharField(max_length=50, null=False, blank=False,help_text='در این فیلد نام استان ذحیره می شود')
 
     def __str__(self):
-        return str(self.provinceName)
+        return str(self.id)+"=> "+str(self.provinceName)
 
     class Meta:
         verbose_name_plural = 'Provinces'
@@ -304,7 +304,7 @@ class ProvinceGeofence(models.Model):
     provinceLong = models.FloatField(help_text='در این فیلد طول جغرافیایی ذحیره می شود')
 
     def __str__(self):
-        return str(self.province) + '-' + str(self.provinceLat) + '-' + str(self.provinceLong)
+        return str(self.id)+"=> "+str(self.province) + '-' + str(self.provinceLat) + '-' + str(self.provinceLong)
 
     class Meta:
         verbose_name_plural = 'ProvinceGeofence'
@@ -316,7 +316,7 @@ class Counties(models.Model):
     countyName=models.CharField(max_length=50, null=False, blank=False,
                                     help_text='در این فیلد نام شهرستان ذحیره می شود')
     def __str__(self):
-        return str(self.countyName)
+        return str(self.id)+"=> "+str(self.countyName)
 
     class Meta:
         verbose_name_plural = 'Counties'
@@ -329,7 +329,7 @@ class Cities(models.Model):
     cityName = models.CharField(max_length=50, null=False, blank=False,
                                     help_text='در این فیلد نام شهرستان ذحیره می شود')
     def __str__(self):
-        return str(self.cityName)
+        return str(self.id)+"=> "+str(self.cityName)
 
     class Meta:
         verbose_name_plural = 'Cities'
@@ -344,7 +344,7 @@ class CityGeofence(models.Model):
     cityLong = models.FloatField(help_text='در این فیلد طول جغرافیایی ذحیره می شود')
 
     def __str__(self):
-        return str(self.city) + '-' + str(self.cityLat) + '-' + str(self.cityLong)
+        return str(self.id)+"=> "+str(self.city) + '-' + str(self.cityLat) + '-' + str(self.cityLong)
 
     class Meta:
         verbose_name_plural = 'CityGeofence'
@@ -359,7 +359,7 @@ class Regions(models.Model):
     regionDescription= models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مناطق ذحیره می شود')
 
     def __str__(self):
-        return str(self.regionName)
+        return str(self.id)+"=> "+str(self.regionName)
 
     class Meta:
         verbose_name_plural = 'Regions'
@@ -374,7 +374,7 @@ class RegionsGeofence(models.Model):
     regionLong = models.FloatField(help_text='در این فیلد طول جعرافیایی ذحیره می شود')
 
     def __str__(self):
-        return str(self.region) + '-' + str(self.regionLat) + '-' + str(self.regionLong)
+        return str(self.id)+"=> "+str(self.region) + '-' + str(self.regionLat) + '-' + str(self.regionLong)
 
     class Meta:
         verbose_name_plural = 'RegionsGeofence'
@@ -390,7 +390,7 @@ class Neighbourhoods(models.Model):
     neighbourhoodDescription = models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به محله ذحیره می شود')
 
     def __str__(self):
-        return str(self.neighbourhoodName)
+        return str(self.id)+"=> "+str(self.neighbourhoodName)
 
     class Meta:
         verbose_name_plural = 'Neighbourhoods'
@@ -405,7 +405,7 @@ class NeighbourhoodGeofence(models.Model):
     neighbourhoodLong = models.FloatField(help_text='در این فیلد طول جعرافیایی ذحیره می شود')
 
     def __str__(self):
-        return str(self.neighbourhood) + '-' + str(self.neighbourhoodLat) + '-' + str(self.neighbourhoodLong)
+        return str(self.id)+"=> "+str(self.neighbourhood) + '-' + str(self.neighbourhoodLat) + '-' + str(self.neighbourhoodLong)
 
     class Meta:
         verbose_name_plural = 'NeighbourhoodGeofence'
@@ -420,7 +420,7 @@ class HireForm(models.Model):
     formTitle=models.CharField(max_length=20,help_text='در این فیلد عنوان قابل نمایش فرم ذحیره می شود')
 
     def __str__(self):
-        return str(self.formName)
+        return str(self.id)+"=> "+str(self.formName)
 
     class Meta:
         verbose_name_plural = 'HireForm'
@@ -434,7 +434,7 @@ class HireJson(models.Model):
     formJson=models.TextField(help_text='در این فیلد طراحی فرم  به صورت Json ذحیره می شود')
 
     def __str__(self):
-        return str(self.form)
+        return str(self.id)+"=> "+str(self.form)
 
     class Meta:
         verbose_name_plural = 'HireJson'
@@ -449,7 +449,7 @@ class OTPsms(models.Model):
     verifyCode = models.CharField(max_length=10,help_text='در این فیلد کد تایید برای ورود یا ثبت نام دخیره می شود')
 
     def __str__(self):
-        return str(self.userId)
+        return str(self.id)+"=> "+str(self.userId)
 
     class Meta:
         verbose_name_plural = 'OTPsms'
@@ -468,7 +468,7 @@ class SmsTypes(models.Model):
     smsCaption = models.TextField(help_text='در این فیلد متن پیامک ارسالی ذخیره می شود')
 
     def __str__(self):
-        return str(self.smsName) + '-' + str(self.smsKind)
+        return str(self.id)+"=> "+str(self.smsName) + '-' + str(self.smsKind)
 
     class Meta:
         verbose_name_plural = 'SmsTypes'
@@ -486,7 +486,7 @@ class Sms(models.Model):
     smsReceiveDateTime = models.DateTimeField(help_text='در این فیلد زمان دریافت پیامک جواب ذخیره می شود')
 
     def __str__(self):
-        return str(self.smsType) + '-' + str(self.receiver)
+        return str(self.id)+"=> "+str(self.smsType) + '-' + str(self.receiver)
 
     class Meta:
         verbose_name_plural = 'SmsTypes'
@@ -497,7 +497,17 @@ class Logs(models.Model):
     actor=models.ForeignKey(User,on_delete=models.CASCADE)
     actDateTime=models.DateTimeField()
     def __str__(self):
-        return str(self.action) + '-' + str(self.actor) +'-' + str(self.actor)
+        return str(self.id)+"=> "+str(self.action) + '-' + str(self.actor) +'-' + str(self.actor)
 
     class Meta:
         verbose_name_plural = 'Logs'
+
+
+class testModel(models.Model):
+    testpic=models.ImageField(upload_to="testimages/")
+
+    def __str__(self):
+        return str(self.id)
+
+    class Meta:
+        verbose_name_plural = 'test'

@@ -302,7 +302,7 @@ class GetPersonAuth(APIView):
     # serializer_class = PersonSerializer
     permission_classes = (IsAuthenticated,)
     def get(self,request):
-        person_auth = PersonAuth.objects.filter(user__id=self.request.user.id).values('person','category','category__name','active','fillProfile')
+        person_auth = PersonAuth.objects.filter(user__id=self.request.user.id).values('user','person','category','category__name','active','fillProfile')
         return Response(person_auth)
 
 class GetAllCompanyMembers(APIView):
@@ -460,7 +460,7 @@ class DeleteCustomerAddress(APIView):
         id = self.request.data.get('addid')
         print(id)
         da=Addresses.objects.filter(id=id).delete()
-        return Response({'Address deleted ID': id})
+        return Response({'result':'Address deleted ID'+ str(id)})
 
 
 class TechnicianUploadPic(APIView):

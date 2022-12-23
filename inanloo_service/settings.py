@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'configrules',
     'personal',
     'support',
-    'websocket',
+    # 'websocket',
     # 'channels',
 
     'django.contrib.admindocs'
@@ -193,7 +193,8 @@ USE_TZ = False
 STATIC_ROOT = '/home/mersagro/public_html/static'
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/home/mersagro/public_html/media'
+# MEDIA_ROOT = '/home/mersagro/public_html/media'
+MEDIA_ROOT=os.path.join(BASE_DIR, "media")
 MEDIA_URL = '/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -220,5 +221,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 GRAPH_MODELS ={
     # 'all_aplications': True,
     # 'group_models' : True
-    'app_labels': ["personal", "baseinfo"],
+    'app_labels': ["personal", "baseinfo", "order"],
 }

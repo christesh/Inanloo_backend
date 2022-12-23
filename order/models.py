@@ -15,7 +15,7 @@ class KindOfOrder(models.Model):
     description=models.TextField(null=True,blank=True, help_text='در این فیلد توصیحات مربوط به نوع سفارش ذخیره می شود')
 
     def __str__(self):
-        return str(self.orderKind)
+        return str(self.id)+"=> "+str(self.orderKind)
 
     class Meta:
         verbose_name_plural = 'KindOfOrder'
@@ -31,7 +31,7 @@ class OrderTimeRange(models.Model):
     description=models.TextField(null=True,blank=True, help_text='در این فیلد توضیحات لازم برای بازه زمانی ذخیره می شود')
 
     def __str__(self):
-        return str(self.timeRange)
+        return str(self.id)+"=> "+str(self.timeRange)
 
     class Meta:
         verbose_name_plural = 'OrderTimeRange'
@@ -41,11 +41,11 @@ class OrderStatus (models.Model):
     """
     در این جدول انواع وضعیت های مربوط به سفارش ها تعریف می شود
     """
-    status=models.CharField(max_length=20,help_text='در این فیلد عنوان وضعیت ذخیره می شود')
+    status=models.CharField(max_length=50,help_text='در این فیلد عنوان وضعیت ذخیره می شود')
     description=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به وضعیت ذخیره می شود')
 
     def __str__(self):
-        return str(self.status)
+        return str(self.id)+"=> "+str(self.status)
 
     class Meta:
         verbose_name_plural = 'OrderStatus'
@@ -69,12 +69,47 @@ class Order (models.Model):
     orderStatus=models.ForeignKey(OrderStatus, on_delete=models.CASCADE,help_text='در این فیلد وضعیت سفارش ذخیره می شود')
     technician = models.ForeignKey(Technician,null=True,blank=True,db_constraint=False, on_delete=models.CASCADE,help_text='در این فیلد تکنسین انجام دهنده سفارش ذخیره می شود')
     description = models.TextField(null=True,blank=True, help_text='در این فیلد توضیحات مازاد مربوط به انجام سفارش ذخیره می شود')
+    hasGuarantee= models.BooleanField(null=True,blank=True)
     def __str__(self):
-        return str(self.customer) + '-' +str(self.registerDateTime)
+        return str(self.id)+"=> "+ str(self.customer) + '-' +str(self.registerDateTime)
 
     class Meta:
         verbose_name_plural = 'Order'
 
+
+class CanselReason(models.Model):
+    reason = models.CharField(max_length=50, help_text='در این فیلد عنوان وضعیت ذخیره می شود')
+    description = models.TextField(null=True, blank=True, help_text='در این فیلد توضیحات مربوط به وضعیت ذخیره می شود')
+
+    def __str__(self):
+        return str(self.id) + "=> " + str(self.reason)
+
+    class Meta:
+        verbose_name_plural = 'CanselReason'
+
+class OrderCancelReason(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
+    cancelReason = models.ForeignKey(CanselReason, on_delete=models.CASCADE)
+    desciription=models.TextField(null=True, blank=True)
+    def __str__(self):
+        return str(self.id) + "=> " + str(self.order) +" "+str(self.order)
+
+    class Meta:
+        verbose_name_plural = 'OrderCancelReason'
+
+class OrderLog(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
+    editedItems=models.CharField(max_length=30)
+    editedValue=models.CharField(max_length=100,null=True,blank=True)
+
+    actionDatetime=models.DateTimeField()
+    def __str__(self):
+        return str(self.id)+"=> "+ str(self.order)
+
+    class Meta:
+        verbose_name_plural = 'OrderLog'
 
 class OrderDetails(models.Model):
     """
@@ -84,11 +119,22 @@ class OrderDetails(models.Model):
     soldIndividualDevice=models.ManyToManyField(SoldIndividualDevice,help_text='در این فیلد اطلاعات قطعه خریداری شده از جدول SoldIndividualDevice ذخیره می شود')
 
     def __str__(self):
-        return str(self.order) + '-' + str(self.soldIndividualDevice)
+        return str(self.id)+"=> "+str(self.order) + '-' + str(self.soldIndividualDevice)
 
     class Meta:
         verbose_name_plural = 'OrderDetails'
 
+class RejectedOrders(models.Model):
+    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.CASCADE,
+                              help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
+    technician = models.ForeignKey(Technician, null=True, blank=True, db_constraint=False, on_delete=models.CASCADE,
+                                   help_text='در این فیلد تکنسین انجام دهنده سفارش ذخیره می شود')
+    rejectDateTime=models.DateTimeField()
+    def __str__(self):
+        return str(self.id)+"=> "+str(self.order) +" "+ str(self.technician)
+
+    class Meta:
+        verbose_name_plural = 'RejectedOrders'
 
 class CustomerProblems (models.Model):
     """
@@ -106,7 +152,7 @@ class CustomerProblems (models.Model):
     customerDescription=models.TextField(null=True,blank=True, help_text='دراین فیلد توضیحات مربوط به مشکلات اظهاری مشتری ذخیره میشود')
 
     def __str__(self):
-        return str(self.order) + '-' + str(self.problem)
+        return str(self.id)+"=> "+str(self.order)
 
     class Meta:
         verbose_name_plural = 'CustomerProblems'
@@ -115,10 +161,10 @@ class CustomerProblems (models.Model):
 class CustomerProblemPic (models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               help_text='در این فیلد مشخص میشود تصویر اپدیت شده مربوط به کدام سفارش است')
-    problemImage = models.ImageField(upload_to='images/CustomerProblems/')
+    problemImage = models.ImageField(null=True, blank=True, upload_to='images/CustomerProblems/')
 
     def __str__(self):
-        return str(self.order) + '-' + str(self.problemImage)
+        return str(self.id)+"=> "+str(self.order) + '-' + str(self.problemImage)
 
     class Meta:
         verbose_name_plural = 'CustomerProblemPic'
@@ -130,11 +176,18 @@ class TechnicianProblems (models.Model):
     """
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               help_text='در این فیلد مشخص میشود قطعه خریداری شده مربوط به کدام سفارش است')
-    problem=models.ForeignKey(Problems,on_delete=models.CASCADE,help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+    categoryProblem = models.ForeignKey(ApllianceCategoryProblems, null=True, blank=True, on_delete=models.CASCADE,
+                                        help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+    brandproblem = models.ForeignKey(BarndsProblems, null=True, blank=True, on_delete=models.CASCADE,
+                                     help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+
+    modelProblem = models.ForeignKey(Problems, null=True, blank=True, on_delete=models.CASCADE,
+                                     help_text='در این فلد مشکل از جدول Problems انتخاب میشود')
+
     technicianDescription=models.TextField(null=True,blank=True,help_text='دراین فیلد توضیحات مربوط به مشکلات اظهاری تکنسین ذخیره میشود')
 
     def __str__(self):
-        return str(self.order) + '-' + str(self.problem)
+        return str(self.id)+"=> "+str(self.order)
 
     class Meta:
         verbose_name_plural = 'TechnicianProblems'
@@ -143,13 +196,13 @@ class TechnicianProblems (models.Model):
 class TechnicianProblemPic (models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               help_text='در این فیلد مشخص میشود تصویر اپدیت شده مربوط به کدام سفارش است')
-    problemImage = models.ImageField(upload_to='images/CustomerProblems/')
+    problemImage = models.ImageField(upload_to='images/TechnicianProblems/')
 
     def __str__(self):
-        return str(self.order) + '-' + str(self.problemImage)
+        return str(self.id)+"=> "+str(self.order) + '-' + str(self.problemImage)
 
     class Meta:
-        verbose_name_plural = 'CustomerProblemPic'
+        verbose_name_plural = 'TechnicianProblemPic'
 
 
 class CustomerAppliance(models.Model):
@@ -157,7 +210,7 @@ class CustomerAppliance(models.Model):
     applianceModel=models.ForeignKey(Appliances,null=True,blank=True,on_delete=models.CASCADE)
     applianceSerial = models.CharField(max_length=30, null=True, blank=True)
     def __str__(self):
-        return str(self.customer) + '-' + str(self.appliance)
+        return str(self.id)+"=> "+str(self.customer) + '-' + str(self.applianceModel)
 
     class Meta:
         verbose_name_plural = 'CustomerAppliance'
@@ -170,7 +223,7 @@ class CustomerApplianceGuarantee(models.Model):
     guaranteeEndDate=models.CharField(max_length=30, null=True, blank=True)
 
     def __str__(self):
-        return str(self.customerAppliance) + '-' + str(self.guaranteeStartDate)
+        return str(self.id)+"=> "+str(self.customerAppliance) + '-' + str(self.guaranteeStartDate)
 
     class Meta:
         verbose_name_plural = 'CustomerApplianceGuarantee'
@@ -181,9 +234,18 @@ class CustomerApplianceInvoice(models.Model):
     invoicePic=models.ImageField(upload_to='images/CustomerApplianceInvoice/')
 
     def __str__(self):
-        return str(self.customerAppliance)
+        return str(self.id)+"=> "+str(self.customerAppliance)
 
     class Meta:
         verbose_name_plural = 'CustomerApplianceInvoice'
 
+class TechnicianOrdersSended(models.Model):
+    technician=models.ForeignKey(Technician,on_delete=models.CASCADE)
+    order=models.ForeignKey(Order,on_delete=models.CASCADE)
+    sendDateTime=models.DateTimeField()
 
+    def __str__(self):
+        return str(self.id)+"=> "+str(self.customerAppliance)
+
+    class Meta:
+        verbose_name_plural = 'CustomerApplianceInvoice'

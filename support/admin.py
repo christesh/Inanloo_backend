@@ -10,6 +10,9 @@ from .models import (
     TicketPriority,
     Tickets,
     TicketChats,
+    UserChatStatus,
+    ChatMessages,
+    TicketSubjects
 )
 # Register your models here.
 admin.site.register(TechnicianNegativePoints)
@@ -22,3 +25,6 @@ admin.site.register(TicketStatus)
 admin.site.register(TicketPriority)
 admin.site.register(Tickets)
 admin.site.register(TicketChats)
+admin.site.register(UserChatStatus)
+admin.site.register(ChatMessages)
+admin.site.register(TicketSubjects)

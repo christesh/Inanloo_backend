@@ -19,6 +19,8 @@ from rest_framework_simplejwt import views as jwt_views
 from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
 from rest_framework_swagger.views import get_swagger_view
+from django.conf import settings
+from django.conf.urls.static import static
 DOCS_TITLE = "Inanloo Services API"
 DOCS_DESCRIPTION = " "
 urlpatterns = [
@@ -31,7 +33,7 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('baseinfo/', include('baseinfo.urls')),
     path('personal/', include('personal.urls')),
-    path('order/', include('order.urls')),
+    path('support/', include('support.urls')),
     path('schema/', get_schema_view(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('docs/', include_docs_urls(DOCS_TITLE, DOCS_DESCRIPTION)),
     path('swagger-docs/', get_swagger_view(DOCS_TITLE)),

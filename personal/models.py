@@ -21,7 +21,7 @@ class Person(models.Model):
     email = models.EmailField(null=True, blank=True,help_text='ادرس ایمیل فرد در این فیلد ذخیره میشود')
     createdAt = models.DateTimeField(null=False, blank=False,help_text='تاریخ ثبت نام فرد در این فیلد ذخیره میشود')
     createdBy = models.ForeignKey(User,on_delete=models.CASCADE, related_name='creator',help_text='سخض ثبت نام کننده فرد در این فیلد ذخیره میشود')
-    picture = models.ImageField(upload_to='userimage/UserPersonalImages', null=True, blank=True,help_text='تصویر پروفایل فرد در این فیلد ذخیره میشود')
+    picture = models.ImageField(upload_to='usersimage/UserPersonalImages', null=True, blank=True,help_text='تصویر پروفایل فرد در این فیلد ذخیره میشود')
     ageRang = models.IntegerField(null=True, blank=True,help_text='بازه سنی فرد در این فیلد ذخیره میشود')
     authuser = models.ForeignKey(User, on_delete=models.CASCADE,related_name='User',help_text=' در این فیلد مشخص میشود این فرد به چه نام کاربری در سیستم ثبت شده است')
 
@@ -33,9 +33,9 @@ class Customers(Person):
     """
     customerCategory=models.ForeignKey(CustomerCategory,null=True, blank=True, on_delete=models.CASCADE,help_text=' در این فیلد نوع مشتری از جدول CustomerCategory ذخیره میشود')
     customerDevices=models.ManyToManyField(Appliances,null=True, blank=True,help_text=' در این فیلد لوازم خانگی مشتری از جدول Devices ذخیره میشود')
-
+    customerRank = models.FloatField(null=True, blank=True, help_text=' در این فیلد گرید مشتری ذخیره میشود')
     def __str__(self):
-        return 'Customer' +str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
+        return str(self.id)+"=> " +str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId)
 
     class Meta:
         verbose_name_plural = 'Customers'
@@ -65,7 +65,7 @@ class Technician(Person):
     hireForm=models.TextField(null=True,blank=True,help_text=' در این فیلد اطلاعات فرم استخدامی تکنسین به صورت Json ذخیره میشود')
 
     def __str__(self):
-        return 'Technician' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId) +'-'+str(self.activate)
+        return str(self.id)+"=> "+ str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.nationalId) +'-'+str(self.activate)
 
     class Meta:
         verbose_name_plural = 'Technician'
@@ -82,7 +82,7 @@ class TechnicianSkills(models.Model):
     fix=models.BooleanField()
     skillDescription=models.TextField(null=True,blank=True,help_text='در این فیلد توضیحات مربوط به مهارتها ذخیره می شود')
     def __str__(self):
-        return str(self.techneician)
+        return str(self.id)+"=> "+str(self.techneician)
 
     class Meta:
         verbose_name_plural = 'TechnicianSkills'
@@ -102,7 +102,7 @@ class TechnicianDistricts(models.Model):
     neighbourhood = models.ForeignKey(Neighbourhoods, on_delete=models.CASCADE, null=True, blank=True,
                                       help_text=' در این فیلد مشخص آدرس مربوط به چه محله ای است')
     def __str__(self):
-        return str(self.techneician)
+        return str(self.id)+"=> "+str(self.techneician)
 
     class Meta:
         verbose_name_plural = 'TechnicianDistricts'
@@ -118,7 +118,7 @@ class CompanyMembers(Person):
     quitDate=models.DateField(null=True, blank=True,help_text=' در این فیلد تاریخ اتمام همکاری ذخیره میشود')
 
     def __str__(self):
-        return 'CompanyMember' + str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.membersGroup)
+        return str(self.id)+"=> "+ str(self.firstName) + '-' + str(self.lastName) +'-'+str(self.membersGroup)
 
     class Meta:
         verbose_name_plural = 'CompanyMembers'
@@ -133,7 +133,7 @@ class Mobiles(models.Model):
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این شماره موبایل شماره موبایل اصلی قرد است یا نه')
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.mobileNumber) +'-'+str(self.isMain)
+        return str(self.id)+"=> "+str(self.person) + '-' + str(self.mobileNumber) +'-'+str(self.isMain)
 
     class Meta:
         verbose_name_plural = 'Mobiles'
@@ -148,7 +148,7 @@ class Phones(models.Model):
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این شماره ثابت شماره اصلی قرد است یا نه')
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.phoneNumber) +'-'+str(self.isMain)
+        return str(self.id)+"=> "+str(self.person) + '-' + str(self.phoneNumber) +'-'+str(self.isMain)
 
     class Meta:
         verbose_name_plural = 'Phones'
@@ -178,7 +178,7 @@ class Addresses(models.Model):
     isMain=models.BooleanField(null=False, blank=False,help_text=' در این فیلد مشخص میشود آیا این آدرس اصلی قرد است یا نه')
 
     def __str__(self):
-        return str(self.person) + '-' + str(self.city) +'-'+str(self.region)+'-'+str(self.addressStreet)+'-'+str(self.addressLane)+'-'+str(self.addressNo)+'-'+str(self.isMain)
+        return str(self.id)+"=> "+str(self.person) + '-' + str(self.city) +'-'+str(self.region)+'-'+str(self.addressStreet)+'-'+str(self.addressLane)+'-'+str(self.addressNo)+'-'+str(self.isMain)
 
     class Meta:
         verbose_name_plural = 'Addresses'
@@ -195,7 +195,7 @@ class PersonAuth(models.Model):
     fillProfile = models.BooleanField(null=True, blank=True,help_text=' در این فیلد مشخص میشود آیا پروفایل فرد تکمیل شده است یا نه')
 
     def __str__(self):
-        return str(self.person) + '-'  + str(self.category)
+        return str(self.id)+"=> "+str(self.person) + '-'  + str(self.category)
 
     class Meta:
         verbose_name_plural = 'PersonAuth'
@@ -215,7 +215,7 @@ class Supplier (models.Model):
     supplierAgentMobile = models.CharField(max_length=50,help_text='در این فیلد موبایل رابط تامین کننده ذحیره می شود')
 
     def __str__(self):
-        return str(self.supplierName)
+        return str(self.id)+"=> "+str(self.supplierName)
 
     class Meta:
         verbose_name_plural = 'Supplier'

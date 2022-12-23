@@ -46,5 +46,5 @@ urlpatterns = [
     path('sendFCM/', SendFCM.as_view()),
     path('getproblemkind/', GetProblemKind.as_view()),
     path('setlog/',SetLog.as_view()),
-
+    path('test/',test.as_view()),
 ]

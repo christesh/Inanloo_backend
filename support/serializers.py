@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import TechnicianNegativePoints,TechnicianPositivePoints,TechnicianSurvey,CustomerNegativePoints,\
-    CustomerPositivePoints,CustomerSurvey,TicketStatus,TicketPriority,Tickets,TicketChats
+from .models import *
 from order.serializers import OrderSerializer
 
 class TechnicianNegativePointsSerializer(serializers.ModelSerializer):
@@ -59,8 +58,8 @@ class TicketPrioritySerializer(serializers.ModelSerializer):
 
 
 class TicketsSerializer(serializers.ModelSerializer):
-    ticketStatus = TicketStatusSerializer()
-    ticketPriority = TicketPrioritySerializer()
+    ticketStatus = TicketStatusSerializer(read_only=True)
+    ticketPriority = TicketPrioritySerializer(read_only=True)
 
     class Meta:
         model = Tickets
@@ -68,8 +67,13 @@ class TicketsSerializer(serializers.ModelSerializer):
 
 
 class TicketChatsSerializer(serializers.ModelSerializer):
-    ticketNo=TicketsSerializer()
+
     class Meta:
         model = TicketChats
         fields = "__all__"
 
+class TicketFilesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TicketFiles
+        fields = "__all__"

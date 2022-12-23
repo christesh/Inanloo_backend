@@ -488,7 +488,12 @@ class CreateFCMDevice(APIView):
         token=self.request.data.get('tokenFcm')
         userid=self.request.data.get('userId')
         # type = self.request.data.get('type')
-        ff=FCMDevice.objects.filter(user_id=userid).delete()
+        try:
+            ff=FCMDevice.objects.filter(user_id=userid).delete()
+        except:
+            pass
+        u=User.objects.get(id=userid)
+        print(u)
         fcm_device = FCMDevice()
         fcm_device.registration_id = token
         fcm_device.user = User.objects.get(id=userid)
@@ -540,3 +545,10 @@ class SetLog(APIView):
         print('log id:'+str(_log.id))
         return Response({'result':'log is seted:'+str(_log.id)})
 
+class test(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        testv=testModel.objects.all()
+        ttt = testSerializer(testv, many=True)
+        return Response(ttt.data)

@@ -20,4 +20,15 @@ urlpatterns = [
     path('gettechstatusorders/', GetTechStatusOrders.as_view()),
     path('gettechopenorders/', GetTechOpenOrders.as_view()),
     path('sendordertotechnician/',SendOrderToTechnician.as_view()),
+    path('sendordernotification/',SendOrderNotification.as_view()),
+    path('sendmessagenotification/',SendMessageNotification.as_view()),
+    path('sendcallnotification/',SendCallNotification.as_view()),
+    path('getorder/',GetOrder.as_view()),
+    path('accepetorder/',AccepetOrder.as_view()),
+    path('cancelorderbytechnician/',CancelOrderByTechnician.as_view()),
+    path('RejectOrder/',RejectOrder.as_view()),
+    path('CancelOrderByUser/',CancelOrderByUser.as_view()),
+    path('getallorderstatus/',GetAllOrderStatus.as_view()),
+    path('gettechnicianchecklist/',GetTechnicianChecklist.as_view()),
+
 ]
